@@ -1,5 +1,6 @@
 package net.backend.questions.softarextask.service;
 
+import net.backend.questions.softarextask.dto.AnswerDto;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import org.springframework.stereotype.Service;
@@ -14,5 +15,6 @@ public interface AnswerService {
     boolean delete(Answer answer);
     Optional<Answer> findById(int id);
     List<Answer> findAll();
+    List<AnswerDto> findAllByUserId(Integer user_id);
 
 }

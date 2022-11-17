@@ -1,5 +1,7 @@
 package net.backend.questions.softarextask.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -14,13 +16,18 @@ import java.util.Objects;
 @Entity
 @Builder
 @Table(name = "answers")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne()
     @ToString.Exclude
     private User user;
+
     @OneToOne(mappedBy = "answer")
     @ToString.Exclude
     private Question question;

@@ -1,5 +1,6 @@
 package net.backend.questions.softarextask.controller;
 
+import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<User>> getList() {
-        List<User> users = userService.findAll();
+    public ResponseEntity<List<UserDto>> getList() {
+        List<UserDto> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 

@@ -1,8 +1,10 @@
 package net.backend.questions.softarextask.service.impl;
 
+import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.repository.QuestionRepository;
 import net.backend.questions.softarextask.service.QuestionService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,12 @@ import java.util.Optional;
 @Transactional
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public QuestionServiceImpl(QuestionRepository questionRepository) {
+    public QuestionServiceImpl(QuestionRepository questionRepository, ModelMapper modelMapper) {
         this.questionRepository = questionRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -47,5 +51,11 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Question> findAll() {
         return questionRepository.findAll();
+    }
+
+    @Override
+    public List<QuestionDto> findAllByUserId(Integer user_id) {
+      return questionRepository.findAllByUserId(user_id).stream()
+                .map(question -> modelMapper.map(question,QuestionDto.class)).toList();
     }
 }

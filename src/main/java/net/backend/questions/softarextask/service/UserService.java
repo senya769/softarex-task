@@ -1,5 +1,6 @@
 package net.backend.questions.softarextask.service;
 
+import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.model.User;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,6 @@ public interface UserService {
     boolean delete(User user);
     User findById(int id);
     User findByEmail(String email);
-    List<User> findAll();
+    List<UserDto> findAll();
 
 }

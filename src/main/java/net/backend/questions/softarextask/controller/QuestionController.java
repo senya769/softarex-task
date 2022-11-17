@@ -1,5 +1,6 @@
 package net.backend.questions.softarextask.controller;
 
+import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.TypeAnswer;
@@ -13,7 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
+@CrossOrigin(value = "*")
 @RestController
 @RequestMapping("/v2/user/{user_id}/questions")
 public class QuestionController {
@@ -29,29 +33,18 @@ public class QuestionController {
     }
 
     @GetMapping()
-    public List<Question> getAll(@PathVariable Integer user_id){
-        User byId = userService.findById(user_id);
-        return byId.getQuestions();
+    public List<QuestionDto> getAll(@PathVariable Integer user_id){
+       return questionService.findAllByUserId(user_id);
     }
     @PostMapping()
     public ResponseEntity<Question> create(@RequestBody Question question){
         questionService.create(question);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @GetMapping("/test")
-    public ResponseEntity<User> test(){
-        Answer answer = Answer.builder()
-                .user(userService.findByEmail("2"))
-                .build();
-        Question question = Question.builder()
-                .question("How old you?")
-                .typeAnswer(TypeAnswer.SIMPLE_STRING)
-                .user(userService.findById(1))
-                .answer(answer)
-                .build();
-        questionService.create(question);
-        answerService.create(answer);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/{quest_id}")
+    public ResponseEntity<Question> findById(@PathVariable Integer user_id, @PathVariable Integer quest_id){
+        Question byId = questionService.findById(quest_id).orElseThrow(() -> new NoSuchElementException("such ID("+quest_id+") does not exist"));
+        return new ResponseEntity<>(byId,HttpStatus.OK);
     }
 
 }

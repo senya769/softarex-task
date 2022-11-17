@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(value = "*")
 @RestController
 @RequestMapping("/v1/questions")
 public class QuestController {
@@ -30,8 +31,8 @@ public class QuestController {
 
     @GetMapping()
     public ResponseEntity<List<Question>> getAll(){
-        List<Question> all = questionService.findAll();
-        return new ResponseEntity<>(all,HttpStatus.OK);
+        List<Question> questions = questionService.findAll();
+        return new ResponseEntity<>(questions,HttpStatus.OK);
     }
     @PostMapping()
     public ResponseEntity<Question> create(@RequestBody Question question){
