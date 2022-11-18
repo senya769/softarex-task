@@ -24,7 +24,7 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne()
     @ToString.Exclude
     private User user;
 
@@ -41,13 +41,13 @@ public class Question {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Question question = (Question) o;
-        return id != null && Objects.equals(id, question.id);
+        if (o == null || getClass() != o.getClass()) return false;
+        Question question1 = (Question) o;
+        return Objects.equals(question, question1.question) && typeAnswer == question1.typeAnswer;
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(question, typeAnswer);
     }
 }

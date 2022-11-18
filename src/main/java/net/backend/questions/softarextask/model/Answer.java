@@ -36,13 +36,13 @@ public class Answer {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Answer answer = (Answer) o;
-        return id != null && Objects.equals(id, answer.id);
+        if (o == null || getClass() != o.getClass()) return false;
+        Answer answer1 = (Answer) o;
+        return Objects.equals(user, answer1.user) && Objects.equals(question, answer1.question) && Objects.equals(answer, answer1.answer);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(user, question, answer);
     }
 }

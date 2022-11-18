@@ -1,7 +1,6 @@
 package net.backend.questions.softarextask.dto;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -25,5 +24,8 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String number;
+    private Set<Answer> answers;
+    private Set<Question> questions;
+
 
 }
