@@ -25,33 +25,25 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<User>> getList() {
-        List<User> users = userService.findAll();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public List<User> getList() {
+        return userService.findAll();
     }
 
     @PostMapping()
     public ResponseEntity<User> create(@RequestBody User user) {
-        if (userService.create(user)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        userService.create(user);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{user_id}")
-    public ResponseEntity<User> findById(@PathVariable("user_id") Integer id) {
-        User userFromDbById = userService.findById(id);
-        return new ResponseEntity<>(userFromDbById, HttpStatus.OK);
+    public User findById(@PathVariable("user_id") Integer id) {
+        return userService.findById(id);
     }
 
     @PatchMapping("/{user_id}")
-    public ResponseEntity<User> update(@PathVariable("user_id") Integer id, @RequestBody net.backend.questions.softarextask.model.User user) {
+    public ResponseEntity<User> update(@PathVariable("user_id") Integer id, @RequestBody User user) {
         User userFromDB = userService.findById(id);
-        userFromDB.setEmail(user.getEmail());
-        userFromDB.setFirstName(user.getFirstName());
-        userFromDB.setLastName(user.getLastName());
-        userFromDB.setNumber(user.getNumber());
-        userService.update(userFromDB);
+        userService.update(user, userFromDB);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -68,6 +60,7 @@ public class UserController {
         User byId = userService.findById(user_id);
         return byId.getQuestions();
     }
+
     @GetMapping("/{user_id}/answers")
     public Set<Answer> getListAnswers(@PathVariable Integer user_id) {
         User byId = userService.findById(user_id);

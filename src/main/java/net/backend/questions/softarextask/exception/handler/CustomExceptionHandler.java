@@ -1,5 +1,6 @@
-package net.backend.questions.softarextask.exception;
+package net.backend.questions.softarextask.exception.handler;
 
+import net.backend.questions.softarextask.exception.ResourceNotFoundException;
 import org.modelmapper.spi.ErrorMessage;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
@@ -11,14 +12,15 @@ import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler(ChangeSetPersister.NotFoundException.class)
-    public ResponseEntity<ErrorMessage> notFoundException(ChangeSetPersister.NotFoundException exception) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorMessage> notFoundException(ResourceNotFoundException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorMessage(exception.getMessage()));
     }
+
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorMessage> noSuchElement(NoSuchElementException exception){
+    public ResponseEntity<ErrorMessage> noSuchElement(NoSuchElementException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorMessage(exception.getMessage()));

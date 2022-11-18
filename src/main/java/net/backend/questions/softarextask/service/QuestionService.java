@@ -4,13 +4,12 @@ import net.backend.questions.softarextask.model.Question;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public interface QuestionService {
     Question create(Question question);
 
-    Optional<Question> update(Question question, Question questionFromDb);
+    void update(Question question, Question questionFromDb);
 
     boolean delete(Question question);
 

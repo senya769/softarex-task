@@ -7,9 +7,9 @@ import java.util.List;
 
 @Service
 public interface UserService {
-    boolean create(User user);
-    boolean update(User user);
-    boolean delete(User user);
+    void create(User user);
+    void update(User user,User userFromBd);
+    void delete(User user);
     User findById(int id);
     User findByEmail(String email);
     List<User> findAll();
