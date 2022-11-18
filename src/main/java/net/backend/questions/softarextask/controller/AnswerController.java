@@ -5,14 +5,11 @@ import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.service.AnswerService;
 import net.backend.questions.softarextask.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @CrossOrigin(value = "*")
 @RestController
@@ -50,6 +47,11 @@ public class AnswerController {
         answerService.update(answerFromDb);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
+    @DeleteMapping("/{ans_id}")
+    public ResponseEntity<Answer> delete(@PathVariable Integer ans_id){
+        Answer anwer = answerService.findById(ans_id);
+        anwer.setAnswer("");
+        answerService.update(anwer);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

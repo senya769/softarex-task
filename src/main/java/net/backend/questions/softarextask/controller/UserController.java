@@ -1,9 +1,13 @@
 package net.backend.questions.softarextask.controller;
 
 
+import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.User;
+import net.backend.questions.softarextask.service.AnswerService;
+import net.backend.questions.softarextask.service.EmailService;
+import net.backend.questions.softarextask.service.QuestionService;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,15 +22,17 @@ import java.util.Set;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final EmailService emailService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EmailService emailService) {
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     @GetMapping()
-    public List<User> getList() {
-        return userService.findAll();
+    public List<UserDto> getList() {
+        return userService.findAllDto();
     }
 
     @PostMapping()
@@ -36,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/{user_id}")
-    public User findById(@PathVariable("user_id") Integer id) {
-        return userService.findById(id);
+    public UserDto findById(@PathVariable("user_id") Integer id) {
+        return userService.findByIdDto(id);
     }
 
     @PatchMapping("/{user_id}")
@@ -49,9 +55,9 @@ public class UserController {
 
     @DeleteMapping("/{user_id}")
     public ResponseEntity<User> delete(@PathVariable Integer user_id) {
-        //notify email after delete
-        User byId = userService.findById(user_id);
-        userService.delete(byId);
+        User user = userService.findById(user_id);
+        emailService.send(user.getEmail(),"Account Test-Web","Your account was deleted. Good luck!\n"+user);
+        userService.delete(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -1,23 +1,17 @@
 package net.backend.questions.softarextask.controller;
 
-import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
-import net.backend.questions.softarextask.model.TypeAnswer;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.AnswerService;
 import net.backend.questions.softarextask.service.QuestionService;
 import net.backend.questions.softarextask.service.UserService;
-import org.modelmapper.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @CrossOrigin(value = "*")
 @RestController
@@ -25,30 +19,32 @@ import java.util.Optional;
 public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
-    private final AnswerService answerService;
+
 
     @Autowired
-    public QuestionController(QuestionService questionService, UserService userService, AnswerService answerService) {
+    public QuestionController(QuestionService questionService, UserService userService) {
         this.questionService = questionService;
         this.userService = userService;
-        this.answerService = answerService;
+
     }
 
     @GetMapping()
     public List<Question> getAll(@PathVariable Integer user_id){
        return questionService.findAllByUserId(user_id);
     }
+
     @PostMapping("/{for_user_id}")
     public ResponseEntity<Question> create(@RequestBody Question question,
                                            @PathVariable Integer user_id,
                                            @PathVariable Integer for_user_id){
+        User user = userService.findById(user_id);
         Answer answer = Answer.builder()
                 .user(userService.findById(for_user_id))
                 .build();
-        question.setUser(userService.findById(user_id));
+        question.setUser(user);
         question.setAnswer(answer);
+        question.setTypeAnswer(question.getTypeAnswer());
         questionService.create(question);
-    //    answerService.create(answer);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/{quest_id}")

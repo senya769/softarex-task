@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -31,6 +33,7 @@ public class Answer {
     @OneToOne(mappedBy = "answer")
     @ToString.Exclude
     private Question question;
+    @Column(columnDefinition = " ")
     private String answer;
 
     @Override

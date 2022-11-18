@@ -19,5 +19,4 @@ public interface QuestionService {
 
     List<Question> findAllByUserId(Integer user_id);
 
-
 }

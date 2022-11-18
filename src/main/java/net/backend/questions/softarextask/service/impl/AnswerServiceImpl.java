@@ -15,13 +15,12 @@ import java.util.NoSuchElementException;
 @Transactional
 public class AnswerServiceImpl implements AnswerService {
     private final AnswerRepository answerRepository;
-    private final ModelMapper modelMapper;
 
 
     @Autowired
-    public AnswerServiceImpl(AnswerRepository answerRepository, ModelMapper modelMapper) {
+    public AnswerServiceImpl(AnswerRepository answerRepository) {
         this.answerRepository = answerRepository;
-        this.modelMapper = modelMapper;
+
     }
 
     @Override
@@ -42,7 +41,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Answer findById(int id) {
-        return answerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Such Answer with ID("+id+") not was found"));
+        return answerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Such Answer with ID(" + id + ") not was found"));
     }
 
     @Override
@@ -52,10 +51,6 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public List<Answer> findAllByUserId(Integer user_id) {
-       /* return answerRepository.findAllByUserId(user_id)
-                .stream()
-                .map(answer -> modelMapper.map(answer,AnswerDto.class))
-                .toList();*/
-        return answerRepository.findAllByUserId(user_id);
+        return answerRepository.findAllByUserId(user_id).orElseThrow(() -> new NoSuchElementException("list answers from user with id(" + user_id + ") was not found"));
     }
 }

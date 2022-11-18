@@ -7,24 +7,20 @@ import net.backend.questions.softarextask.service.QuestionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ServerErrorException;
-import org.springframework.web.server.ServerWebInputException;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
-    private final ModelMapper modelMapper;
+
 
     @Autowired
-    public QuestionServiceImpl(QuestionRepository questionRepository, ModelMapper modelMapper) {
+    public QuestionServiceImpl(QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
-        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -44,17 +40,16 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public boolean delete(Question question) {
-        if(questionRepository.findById(question.getId()).isPresent()){
-         questionRepository.delete(question);
-         return true;
+        if (questionRepository.findById(question.getId()).isPresent()) {
+            questionRepository.delete(question);
+            return true;
         }
         return false;
     }
 
     @Override
     public Question findById(int id) {
-        return questionRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("such Question ID{"+id+"} was not found"));
+        return questionRepository.findById(id).orElseThrow(() -> new NoSuchElementException("such Question ID{" + id + "} was not found"));
     }
 
     @Override
@@ -64,8 +59,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> findAllByUserId(Integer user_id) {
-      /*return questionRepository.findAllByUserId(user_id).stream()
-                .map(question -> modelMapper.map(question,QuestionDto.class)).toList();*/
-        return questionRepository.findAllByUserId(user_id);
+        return questionRepository.findAllByUserId(user_id).orElseThrow(() -> new NoSuchElementException("List Questions from User with ID(" + user_id + ") was not found"));
     }
 }
+
