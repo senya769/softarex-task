@@ -13,7 +13,7 @@ import java.util.List;
 
 @CrossOrigin(value = "*")
 @RestController
-@RequestMapping("/user/{user_id}/answers")
+@RequestMapping("/users/{user_id}/answers")
 public class AnswerController {
     private final AnswerService answerService;
     private final QuestionService questionService;
@@ -22,24 +22,15 @@ public class AnswerController {
         this.answerService = answerService;
         this.questionService = questionService;
     }
-    @GetMapping()
-    public ResponseEntity<List<Answer>> getAll(@PathVariable("user_id") Integer id){
-        List<Answer> answers = answerService.findAllByUserId(id);
-        return new ResponseEntity<>(answers,HttpStatus.OK);
-    }
+
     @GetMapping("/{ans_id}")
     public ResponseEntity<Answer> getById(@PathVariable("user_id") Integer id, @PathVariable Integer ans_id){
         Answer answer = answerService.findById(ans_id);
         return new ResponseEntity<>(answer,HttpStatus.OK);
     }
 
-    @PostMapping()
-    public ResponseEntity<Answer> create(@PathVariable("user_id") Integer id,@RequestBody Answer answer){
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
     @PatchMapping("/{quest_id}")
-    public ResponseEntity<Answer> update(@PathVariable("user_id") Integer id,
-                                         @RequestBody Answer answer,
+    public ResponseEntity<Answer> toAnswer(@RequestBody Answer answer,
                                          @PathVariable Integer quest_id){
         Question byId = questionService.findById(quest_id);
         Answer answerFromDb = byId.getAnswer();
@@ -49,9 +40,9 @@ public class AnswerController {
     }
     @DeleteMapping("/{ans_id}")
     public ResponseEntity<Answer> delete(@PathVariable Integer ans_id){
-        Answer anwer = answerService.findById(ans_id);
-        anwer.setAnswer("");
-        answerService.update(anwer);
+        Answer answer = answerService.findById(ans_id);
+        answer.setAnswer(null);
+        answerService.update(answer);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

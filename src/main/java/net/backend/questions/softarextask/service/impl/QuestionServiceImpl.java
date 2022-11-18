@@ -4,7 +4,6 @@ import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.repository.QuestionRepository;
 import net.backend.questions.softarextask.service.QuestionService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

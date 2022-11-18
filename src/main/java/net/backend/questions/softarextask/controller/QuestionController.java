@@ -2,8 +2,8 @@ package net.backend.questions.softarextask.controller;
 
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
+import net.backend.questions.softarextask.model.TypeAnswer;
 import net.backend.questions.softarextask.model.User;
-import net.backend.questions.softarextask.service.AnswerService;
 import net.backend.questions.softarextask.service.QuestionService;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @CrossOrigin(value = "*")
 @RestController
-@RequestMapping("/v2/user/{user_id}/questions")
+@RequestMapping("/users/{user_id}/questions")
 public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
@@ -28,27 +28,16 @@ public class QuestionController {
 
     }
 
-    @GetMapping()
-    public List<Question> getAll(@PathVariable Integer user_id){
-       return questionService.findAllByUserId(user_id);
-    }
-
-    @PostMapping("/{for_user_id}")
+    @PostMapping()
     public ResponseEntity<Question> create(@RequestBody Question question,
-                                           @PathVariable Integer user_id,
-                                           @PathVariable Integer for_user_id){
+                                           @PathVariable Integer user_id){
         User user = userService.findById(user_id);
-        Answer answer = Answer.builder()
-                .user(userService.findById(for_user_id))
-                .build();
         question.setUser(user);
-        question.setAnswer(answer);
-        question.setTypeAnswer(question.getTypeAnswer());
         questionService.create(question);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/{quest_id}")
-    public ResponseEntity<Question> findById(@PathVariable Integer user_id, @PathVariable Integer quest_id){
+    public ResponseEntity<Question> findById(@PathVariable Integer quest_id){
         Question byId = questionService.findById(quest_id);
         return new ResponseEntity<>(byId,HttpStatus.OK);
     }

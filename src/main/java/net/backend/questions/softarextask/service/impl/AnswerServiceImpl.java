@@ -3,7 +3,6 @@ package net.backend.questions.softarextask.service.impl;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.repository.AnswerRepository;
 import net.backend.questions.softarextask.service.AnswerService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
