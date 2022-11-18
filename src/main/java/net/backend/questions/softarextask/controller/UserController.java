@@ -1,6 +1,8 @@
 package net.backend.questions.softarextask.controller;
 
-import net.backend.questions.softarextask.dto.UserDto;
+
+import net.backend.questions.softarextask.model.Answer;
+import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(value = "*")
 @RestController
@@ -22,8 +25,8 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<UserDto>> getList() {
-        List<UserDto> users = userService.findAll();
+    public ResponseEntity<List<User>> getList() {
+        List<User> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -42,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping("/{user_id}")
-    public ResponseEntity<User> update(@PathVariable("user_id") Integer id, @RequestBody User user) {
+    public ResponseEntity<User> update(@PathVariable("user_id") Integer id, @RequestBody net.backend.questions.softarextask.model.User user) {
         User userFromDB = userService.findById(id);
         userFromDB.setEmail(user.getEmail());
         userFromDB.setFirstName(user.getFirstName());
@@ -60,4 +63,14 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/{user_id}/questions")
+    public Set<Question> getListQuestions(@PathVariable Integer user_id) {
+        User byId = userService.findById(user_id);
+        return byId.getQuestions();
+    }
+    @GetMapping("/{user_id}/answers")
+    public Set<Answer> getListAnswers(@PathVariable Integer user_id) {
+        User byId = userService.findById(user_id);
+        return byId.getAnswers();
+    }
 }

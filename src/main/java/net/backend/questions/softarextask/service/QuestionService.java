@@ -1,6 +1,5 @@
 package net.backend.questions.softarextask.service;
 
-import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.model.Question;
 import org.springframework.stereotype.Service;
 
@@ -11,15 +10,15 @@ import java.util.Optional;
 public interface QuestionService {
     Question create(Question question);
 
-    boolean update(Question question);
+    Optional<Question> update(Question question, Question questionFromDb);
 
     boolean delete(Question question);
 
-   Optional<Question> findById(int id);
+    Question findById(int id);
 
     List<Question> findAll();
 
-    List<QuestionDto> findAllByUserId(Integer user_id);
+    List<Question> findAllByUserId(Integer user_id);
 
 
 }

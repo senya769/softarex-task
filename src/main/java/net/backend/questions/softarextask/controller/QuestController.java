@@ -39,10 +39,10 @@ public class QuestController {
         questionService.create(question);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @GetMapping("/test")
+    /*@GetMapping("/test")
     public ResponseEntity<User> test(){
         Answer answer = Answer.builder()
-                .user(userService.findByEmail("2"))
+                .user(userService.findByEmail("2@"))
                 .build();
         Question question = Question.builder()
                 .question("How old you?")
@@ -54,5 +54,5 @@ public class QuestController {
         answerService.create(answer);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+*/
 }

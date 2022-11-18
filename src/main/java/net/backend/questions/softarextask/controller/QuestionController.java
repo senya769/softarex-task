@@ -8,9 +8,11 @@ import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.AnswerService;
 import net.backend.questions.softarextask.service.QuestionService;
 import net.backend.questions.softarextask.service.UserService;
+import org.modelmapper.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,18 +35,40 @@ public class QuestionController {
     }
 
     @GetMapping()
-    public List<QuestionDto> getAll(@PathVariable Integer user_id){
+    public List<Question> getAll(@PathVariable Integer user_id){
        return questionService.findAllByUserId(user_id);
     }
-    @PostMapping()
-    public ResponseEntity<Question> create(@RequestBody Question question){
+    @PostMapping("/{for_user_id}")
+    public ResponseEntity<Question> create(@RequestBody Question question,
+                                           @PathVariable Integer user_id,
+                                           @PathVariable Integer for_user_id){
+        Answer answer = Answer.builder()
+                .user(userService.findById(for_user_id))
+                .build();
+        question.setUser(userService.findById(user_id));
+        question.setAnswer(answer);
         questionService.create(question);
+    //    answerService.create(answer);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/{quest_id}")
     public ResponseEntity<Question> findById(@PathVariable Integer user_id, @PathVariable Integer quest_id){
-        Question byId = questionService.findById(quest_id).orElseThrow(() -> new NoSuchElementException("such ID("+quest_id+") does not exist"));
+        Question byId = questionService.findById(quest_id);
         return new ResponseEntity<>(byId,HttpStatus.OK);
+    }
+    @DeleteMapping("/{quest_id}")
+    public ResponseEntity<Question> delete(@PathVariable Integer quest_id){
+        Question byId = questionService.findById(quest_id);
+       if(questionService.delete(byId)){
+        return new ResponseEntity<>(HttpStatus.OK);
+       }
+       return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+    @PatchMapping("/{quest_id}")
+    public ResponseEntity<Question> update(@RequestBody Question question,@PathVariable Integer quest_id){
+        Question questionFromDb = questionService.findById(quest_id);
+        questionService.update(question,questionFromDb);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

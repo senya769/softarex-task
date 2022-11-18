@@ -7,10 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.backend.questions.softarextask.model.Answer;
-import net.backend.questions.softarextask.model.Question;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -25,5 +23,10 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String number;
+    @JsonProperty("answers")
+    private Set<AnswerDto> answers;
+    @JsonProperty("questions")
+    private Set<QuestionDto> questions;
+
 
 }

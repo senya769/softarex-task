@@ -1,6 +1,5 @@
 package net.backend.questions.softarextask.service.impl;
 
-import net.backend.questions.softarextask.dto.AnswerDto;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.repository.AnswerRepository;
 import net.backend.questions.softarextask.service.AnswerService;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional
@@ -42,8 +41,8 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public Optional<Answer> findById(int id) {
-        return answerRepository.findById(id);
+    public Answer findById(int id) {
+        return answerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Such Answer with ID("+id+") not was found"));
     }
 
     @Override
@@ -52,10 +51,11 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public List<AnswerDto> findAllByUserId(Integer user_id) {
-        return answerRepository.findAllByUserId(user_id)
+    public List<Answer> findAllByUserId(Integer user_id) {
+       /* return answerRepository.findAllByUserId(user_id)
                 .stream()
                 .map(answer -> modelMapper.map(answer,AnswerDto.class))
-                .toList();
+                .toList();*/
+        return answerRepository.findAllByUserId(user_id);
     }
 }

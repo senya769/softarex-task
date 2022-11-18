@@ -1,6 +1,6 @@
 package net.backend.questions.softarextask.service.impl;
 
-import net.backend.questions.softarextask.dto.QuestionDto;
+import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.repository.QuestionRepository;
 import net.backend.questions.softarextask.service.QuestionService;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -30,8 +31,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public boolean update(Question question) {
-        return questionRepository.save(question).getId()!= null;
+    public Optional<Question> update(Question question, Question questionFromDb) {
+        Answer answer = questionFromDb.getAnswer();
+        answer.setAnswer("");
+        questionFromDb.setAnswer(answer);
+        questionFromDb.setQuestion(question.getQuestion());
+        questionFromDb.setTypeAnswer(question.getTypeAnswer());
+        return Optional.of(questionRepository.save(questionFromDb));
     }
 
     @Override
@@ -44,8 +50,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Optional<Question> findById(int id) {
-        return questionRepository.findById(id);
+    public Question findById(int id) {
+        return questionRepository.findById(id).orElseThrow(() -> new NoSuchElementException("such ID{"+id+"} was not found"));
     }
 
     @Override
@@ -54,8 +60,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionDto> findAllByUserId(Integer user_id) {
-      return questionRepository.findAllByUserId(user_id).stream()
-                .map(question -> modelMapper.map(question,QuestionDto.class)).toList();
+    public List<Question> findAllByUserId(Integer user_id) {
+      /*return questionRepository.findAllByUserId(user_id).stream()
+                .map(question -> modelMapper.map(question,QuestionDto.class)).toList();*/
+        return questionRepository.findAllByUserId(user_id);
     }
 }

@@ -1,6 +1,6 @@
 package net.backend.questions.softarextask.service.impl;
 
-import net.backend.questions.softarextask.dto.UserDto;
+
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.repository.UserRepository;
 import net.backend.questions.softarextask.service.UserService;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean create(User user) {
-        User userFromDb = userRepository.findByEmail(user.getEmail()).orElse(null);
+        User userFromDb = this.findByEmail(user.getEmail());
         if (userFromDb == null) {
 //            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean update(User user) {
-        User userFromDb = userRepository.findByEmail(user.getEmail()).orElse(null);
+        User userFromDb = this.findByEmail(user.getEmail());
         if (userFromDb != null) {
             userRepository.save(user);
             return true;
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean delete(User user) {
-        User userFromDb = userRepository.findByEmail(user.getEmail()).orElse(null);
+        User userFromDb = this.findByEmail(user.getEmail());
         if (userFromDb != null) {
             userRepository.delete(user);
             return true;
@@ -65,11 +64,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("Email which you enter - not found!"));
+        return userRepository.findByEmail(email).orElseThrow(()-> new NoSuchElementException("such email{"+email+"} was not found"));
     }
 
     @Override
-    public List<UserDto> findAll() {
-        return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+    public List<User> findAll() {
+//        return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+    return userRepository.findAll();
     }
 }

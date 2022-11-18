@@ -9,6 +9,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -32,6 +33,13 @@ public class User {
     private String lastName;
     private String password;
     private String number;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Set<Question> questions;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Set<Answer> answers;
 
     @Override
     public boolean equals(Object o) {
