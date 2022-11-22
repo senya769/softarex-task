@@ -1,6 +1,8 @@
 package net.backend.questions.softarextask.dto;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,16 +18,16 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
     private Integer id;
     private String email;
     private String firstName;
     private String lastName;
     private String number;
+    @JsonManagedReference
     private Set<Answer> answers;
+    @JsonManagedReference
     private Set<Question> questions;
     private Set<Roles>roles;
 

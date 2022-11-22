@@ -38,6 +38,7 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<User> create(@RequestBody User user) {
         userService.create(user);
+        emailService.send(user.getEmail(),"Account Test-Web","Your account was created!\n"+user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

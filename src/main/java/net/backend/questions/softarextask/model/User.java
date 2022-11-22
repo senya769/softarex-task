@@ -1,6 +1,7 @@
 package net.backend.questions.softarextask.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -29,6 +30,7 @@ public class User {
     private String email;
     private String firstName;
     private String lastName;
+    @JsonIgnore
     private String password;
     private String number;
 
