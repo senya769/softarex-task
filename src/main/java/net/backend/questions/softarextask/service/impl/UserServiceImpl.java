@@ -3,29 +3,31 @@ package net.backend.questions.softarextask.service.impl;
 
 import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.exception.ResourceNotFoundException;
+import net.backend.questions.softarextask.model.Roles;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.repository.UserRepository;
 import net.backend.questions.softarextask.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
     }
 
@@ -33,6 +35,10 @@ public class UserServiceImpl implements UserService {
     public void create(User user) {
         User byEmail = userRepository.findByEmail(user.getEmail()).orElse(null);
         if (byEmail == null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            Set<Roles> roles = user.getRoles();
+            roles.add(Roles.USER_ROLE);
+            user.setRoles(roles);
             userRepository.save(user);
         }
     }
@@ -43,6 +49,7 @@ public class UserServiceImpl implements UserService {
         userFromDb.setFirstName(user.getFirstName());
         userFromDb.setLastName(user.getLastName());
         userFromDb.setNumber(user.getNumber());
+        userFromDb.setPassword(user.getPassword());
         userRepository.save(userFromDb);
     }
 

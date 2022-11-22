@@ -3,6 +3,7 @@ package net.backend.questions.softarextask.controller;
 
 import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.model.Answer;
+import net.backend.questions.softarextask.model.Check;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.EmailService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @CrossOrigin(value = "*")
@@ -47,8 +49,11 @@ public class UserController {
     @PatchMapping("/{user_id}")
     public ResponseEntity<User> update(@PathVariable("user_id") Integer id, @RequestBody User user) {
         User userFromDB = userService.findById(id);
-        userService.update(user, userFromDB);
-        return new ResponseEntity<>(HttpStatus.OK);
+//        if(userFromDB.getPassword() == user.getPassword()) {
+            userService.update(user, userFromDB);
+            return new ResponseEntity<>(HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 
     @DeleteMapping("/{user_id}")
@@ -57,6 +62,14 @@ public class UserController {
         emailService.send(user.getEmail(),"Account Test-Web","Your account was deleted. Good luck!\n"+user);
         userService.delete(user);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{user_id}/check-password")
+    public Check checkPassword(@PathVariable Integer user_id,@RequestBody User password){
+        User byId = userService.findById(user_id);
+        Check check = new Check();
+        check.setAccept(Objects.equals(byId.getPassword(), password.getPassword()));
+        return check;
     }
 
     @GetMapping("/{user_id}/questions")

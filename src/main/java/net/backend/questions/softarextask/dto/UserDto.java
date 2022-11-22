@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
+import net.backend.questions.softarextask.model.Roles;
 
 import java.util.Set;
 
@@ -26,6 +27,7 @@ public class UserDto {
     private String number;
     private Set<Answer> answers;
     private Set<Question> questions;
+    private Set<Roles>roles;
 
 
 }

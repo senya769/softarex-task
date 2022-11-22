@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,19 +25,24 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     private String firstName;
     private String lastName;
     private String password;
     private String number;
 
+    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<Roles> roles= new HashSet<>();
+
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     @ToString.Exclude
-    private Set<Question> questions;
+    private Set<Question> questions = new HashSet<>();
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     @ToString.Exclude
-    private Set<Answer> answers;
+    private Set<Answer> answers = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
