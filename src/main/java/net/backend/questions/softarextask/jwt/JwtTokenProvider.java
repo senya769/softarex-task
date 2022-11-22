@@ -26,13 +26,14 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 @Autowired
   private   UserDetailsService userDetails;
+
     private final SecretKey secret;
 
     @Value("${jwt.token.expired}")
     private long validityInMilliseconds;
 
 
-    public JwtTokenProvider(   @Value("${jwt.token.expired}")String secret) {
+    public JwtTokenProvider( ) {
         String encode = Encoders.BASE64.encode("accessacceessacseeesasasasc12313123123123123".getBytes());
         this.secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(encode));
     }
