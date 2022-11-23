@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@CrossOrigin(value = "*")
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -38,7 +38,7 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<User> create(@RequestBody User user) {
         userService.create(user);
-        emailService.send(user.getEmail(),"Account Test-Web","Your account was created!\n"+user);
+//        emailService.send(user.getEmail(),"Account Test-Web","Your account was created!\n"+user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

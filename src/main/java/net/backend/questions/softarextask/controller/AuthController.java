@@ -4,7 +4,6 @@ import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.jwt.JwtRequest;
 import net.backend.questions.softarextask.jwt.JwtResponse;
 import net.backend.questions.softarextask.jwt.JwtTokenProvider;
-import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +12,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@CrossOrigin("*")
+@CrossOrigin("http://localhost:3000")
 @RestController
 public class AuthController {
     private final AuthenticationManager authenticationManager;
@@ -46,7 +45,7 @@ public class AuthController {
             }
 
             String token = jwtTokenProvider.createToken(user, user.getRoles().stream().toList());
-            JwtResponse jwtResponse = new JwtResponse(email,token);
+            JwtResponse jwtResponse = new JwtResponse(token,user);
             return ResponseEntity.ok(jwtResponse);
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid email or password");
