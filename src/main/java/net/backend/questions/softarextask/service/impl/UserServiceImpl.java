@@ -32,15 +32,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void create(User user) {
+    public User create(User user) {
         User byEmail = userRepository.findByEmail(user.getEmail()).orElse(null);
         if (byEmail == null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             Set<Roles> roles = user.getRoles();
             roles.add(Roles.USER_ROLE);
             user.setRoles(roles);
-            userRepository.save(user);
+           return userRepository.save(user);
         }
+        return null;
     }
 
     @Override

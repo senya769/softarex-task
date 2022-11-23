@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(value = "*")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -37,8 +37,7 @@ public class UserController {
 
     @PostMapping()
     public ResponseEntity<User> create(@RequestBody User user) {
-        userService.create(user);
-//        emailService.send(user.getEmail(),"Account Test-Web","Your account was created!\n"+user);
+        emailService.send(userService.create(user).getEmail(),"Account Test-Web","Your account was created!\nGood luck!");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -60,7 +59,7 @@ public class UserController {
     @DeleteMapping("/{user_id}")
     public ResponseEntity<User> delete(@PathVariable Integer user_id) {
         User user = userService.findById(user_id);
-        emailService.send(user.getEmail(),"Account Test-Web","Your account was deleted. Good luck!\n"+user);
+        emailService.send(user.getEmail(),"Account Test-Web","Your account was deleted.\nGood luck!");
         userService.delete(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
