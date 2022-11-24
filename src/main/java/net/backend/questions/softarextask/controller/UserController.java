@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@CrossOrigin(value = "*")
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/users")
 public class UserController {

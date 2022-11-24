@@ -4,7 +4,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import net.backend.questions.softarextask.dto.UserDto;
+import net.backend.questions.softarextask.exception.JwtAuthException;
 import net.backend.questions.softarextask.model.Roles;
 import net.backend.questions.softarextask.model.utils.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +25,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 @Autowired
   private   UserDetailsService userDetails;
 
-    private final SecretKey secret;
+    private final SecretKey secret = Keys.hmacShaKeyFor("accessToken-accessToken-accessToken-7".getBytes());
 
     @Value("${jwt.token.expired}")
     private long validityInMilliseconds;
 
 
-    public JwtTokenProvider( ) {
-        String encode = Encoders.BASE64.encode("accessacceessacseeesasasasc12313123123123123".getBytes());
-        this.secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(encode));
-    }
+//    public JwtTokenProvider( ) {
+//        String encode = Encoders.BASE64.encode("accessacceessacseeesasasasc12313123123123123".getBytes());
+//        this.secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(encode));
+//    }
 
 
 
@@ -98,7 +101,7 @@ public class JwtTokenProvider {
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("JWT token is expired or invalid");
+            throw new JwtAuthException("JWT token is expired or invalid");
         }
     }
 
