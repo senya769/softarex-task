@@ -12,13 +12,6 @@ import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorMessage> notFoundException(ResourceNotFoundException exception) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorMessage(exception.getMessage()));
-    }
-
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorMessage> noSuchElement(NoSuchElementException exception) {
         return ResponseEntity
@@ -46,24 +39,27 @@ public class CustomExceptionHandler {
                 .status(exception.getStatus())
                 .body(ErrorResponse.builder()
                         .message(exception.getMessage())
-                        .details(exception.getDetails()).build());
+                        .details(exception.getDetails())
+                        .build());
     }
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(QuestionException.class)
     public ResponseEntity<ErrorResponse> questionHandler(QuestionException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorResponse.builder()
                         .message(exception.getMessage())
-                        .details(exception.getDetails()).build());
+                        .details(exception.getDetails())
+                        .build());
     }
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(AnswerException.class)
     public ResponseEntity<ErrorResponse> answerHandler(AnswerException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorResponse.builder()
                         .message(exception.getMessage())
-                        .details(exception.getDetails()).build());
+                        .details(exception.getDetails())
+                        .build());
     }
 }
