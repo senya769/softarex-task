@@ -12,13 +12,6 @@ import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorMessage> notFoundException(ResourceNotFoundException exception) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorMessage(exception.getMessage()));
-    }
-
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorMessage> noSuchElement(NoSuchElementException exception) {
         return ResponseEntity

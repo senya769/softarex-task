@@ -1,16 +1,16 @@
 package net.backend.questions.softarextask.controller;
 
 import lombok.RequiredArgsConstructor;
+import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.dto.jwt.JwtRefreshRequestDto;
 import net.backend.questions.softarextask.dto.jwt.JwtRequestDto;
 import net.backend.questions.softarextask.dto.jwt.JwtResponseDto;
-import net.backend.questions.softarextask.dto.UserDto;
-import net.backend.questions.softarextask.domain.utils.JwtAuthentication;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.AuthService;
-import org.bouncycastle.math.raw.Mod;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin("*")
 @RestController

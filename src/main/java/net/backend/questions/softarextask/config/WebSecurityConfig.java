@@ -43,11 +43,10 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .apply(new JwtConfig(jwtTokenProvider))
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/login", "/registration","/token","/users/**").permitAll()
+                .antMatchers("/login", "/registration","/token").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
         return http.build();
     }
 
