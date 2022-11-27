@@ -23,7 +23,6 @@ public class QuestionController {
     public QuestionDto create(@RequestBody Question question,
                               @RequestParam String email,
                               @PathVariable Integer userId) {
-        //web-socket
         return questionService.create(userId, email, question);
     }
 
@@ -35,13 +34,11 @@ public class QuestionController {
     @ResponseStatus(value = HttpStatus.OK)
     @DeleteMapping("/{questId}")
     public void delete(@PathVariable Integer questId) {
-        //web-socket
         questionService.delete(questId);
     }
 
     @PatchMapping("/{questId}")
     public QuestionDto update(@RequestBody Question question, @PathVariable Integer questId) {
-        //web-socket
         return questionService.update(questId, question);
     }
 }

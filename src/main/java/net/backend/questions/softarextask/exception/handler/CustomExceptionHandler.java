@@ -46,24 +46,27 @@ public class CustomExceptionHandler {
                 .status(exception.getStatus())
                 .body(ErrorResponse.builder()
                         .message(exception.getMessage())
-                        .details(exception.getDetails()).build());
+                        .details(exception.getDetails())
+                        .build());
     }
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(QuestionException.class)
     public ResponseEntity<ErrorResponse> questionHandler(QuestionException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorResponse.builder()
                         .message(exception.getMessage())
-                        .details(exception.getDetails()).build());
+                        .details(exception.getDetails())
+                        .build());
     }
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(AnswerException.class)
     public ResponseEntity<ErrorResponse> answerHandler(AnswerException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ErrorResponse.builder()
                         .message(exception.getMessage())
-                        .details(exception.getDetails()).build());
+                        .details(exception.getDetails())
+                        .build());
     }
 }
