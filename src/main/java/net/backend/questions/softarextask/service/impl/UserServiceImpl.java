@@ -1,92 +1,141 @@
 package net.backend.questions.softarextask.service.impl;
 
 
+import lombok.RequiredArgsConstructor;
 import net.backend.questions.softarextask.dto.UserDto;
-import net.backend.questions.softarextask.exception.ResourceNotFoundException;
+import net.backend.questions.softarextask.exception.UserException;
 import net.backend.questions.softarextask.model.Roles;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.repository.UserRepository;
+import net.backend.questions.softarextask.service.EmailService;
 import net.backend.questions.softarextask.service.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
+    private final EmailService emailService;
+
     private final ModelMapper modelMapper;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.modelMapper = modelMapper;
-    }
-
     @Override
-    public User create(User user) {
-        User byEmail = userRepository.findByEmail(user.getEmail()).orElse(null);
-        if (byEmail == null) {
+    public UserDto create(User user) {
+        Boolean hasEmail = userRepository.existsUserByEmail(user.getEmail());
+        if (!hasEmail) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            Set<Roles> roles = user.getRoles();
-            roles.add(Roles.USER_ROLE);
-            user.setRoles(roles);
-           return userRepository.save(user);
-        }
-        return null;
-    }
-
-    @Override
-    public void update(User user, User userFromDb) {
-        userFromDb.setEmail(user.getEmail());
-        userFromDb.setFirstName(user.getFirstName());
-        userFromDb.setLastName(user.getLastName());
-        userFromDb.setNumber(user.getNumber());
-        userFromDb.setPassword(user.getPassword());
-        userRepository.save(userFromDb);
-    }
-
-    @Override
-    public void delete(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            userRepository.delete(user);
+            user.addRole(Roles.USER_ROLE);
+            User save = userRepository.save(user);
+            emailService.send(save.getEmail(), "Account Test-Web", "Your account was created!\nGood luck!");
+            return modelMapper.map(save, UserDto.class);
         } else {
-            userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            throw UserException.builder()
+                    .message("This email already exists")
+                    .status(HttpStatus.CONFLICT)
+                    .detail("Email: ", user.getEmail())
+                    .build();
         }
     }
 
     @Override
-    public User findById(int id) {
-        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("such User with ID{" + id + "} was not found"));
+    public UserDto update(Integer userId, User user) {
+        User userFromDb = userRepository.findById(userId).orElseThrow(
+                () -> UserException.builder()
+                        .message("This user with id was not found!")
+                        .status(HttpStatus.NOT_FOUND)
+                        .detail("Id: ", userId.toString())
+                        .build()
+        );
+        Boolean hasEmail = userRepository.existsUserByEmail(user.getEmail());
+        if (!hasEmail) {
+            userFromDb.setEmail(user.getEmail());
+            userFromDb.setFirstName(user.getFirstName());
+            userFromDb.setLastName(user.getLastName());
+            userFromDb.setNumber(user.getNumber());
+            userFromDb.setPassword(passwordEncoder.encode(user.getPassword()));
+            User save = userRepository.save(userFromDb);
+            return modelMapper.map(save, UserDto.class);
+        } else {
+            throw UserException.builder()
+                    .message("This email already exists")
+                    .status(HttpStatus.CONFLICT)
+                    .detail("Email: ", user.getEmail())
+                    .build();
+        }
     }
 
     @Override
-    public UserDto findByIdDto(int id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("such User with ID{" + id + "} was not found"));
-        return modelMapper.map(user, UserDto.class);
+    public void delete(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(
+                        () -> UserException.builder()
+                                .message("This user with id was not found!")
+                                .status(HttpStatus.NOT_FOUND)
+                                .detail("Id: ", userId.toString())
+                                .build()
+                );
+        userRepository.delete(user);
+        emailService.send(user.getEmail(), "Account Test-Web", "Your account was deleted!\nGood luck!");
     }
 
     @Override
-    public UserDto findByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("such User with email{" + email + "} was not found"));
-        return modelMapper.map(user, UserDto.class);
+    public User findById(Integer id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> UserException.builder()
+                        .message("This user with id was not found!")
+                        .status(HttpStatus.NOT_FOUND)
+                        .detail("Id: ", id.toString())
+                        .build()
+        );
+    }
+
+    @Override
+    public UserDto findByIdDto(Integer id) {
+        return userRepository.findById(id)
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .orElseThrow(
+                        () -> UserException.builder()
+                                .message("This user with id was not found!")
+                                .status(HttpStatus.CONFLICT)
+                                .detail("Id: ", id.toString())
+                                .build()
+                );
+    }
+
+    @Override
+    public UserDto findByEmailDto(String email) {
+        return userRepository.findByEmail(email)
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .orElseThrow(
+                        () -> UserException.builder()
+                                .message("This email already exists")
+                                .status(HttpStatus.CONFLICT)
+                                .detail("Email: ", email)
+                                .build()
+                );
     }
 
     @Override
     public List<UserDto> findAllDto() {
-        return Optional.of(userRepository.findAll()).orElseThrow(() -> new ResourceNotFoundException("User resource is not found")).stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+        return userRepository.findAll()
+                .stream()
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .toList();
     }
 
     @Override
-    public List<User> findAll() {
-        return Optional.of(userRepository.findAll()).orElseThrow(() -> new ResourceNotFoundException("User resource is not found"));
+    public Boolean isPasswordMatch(Integer userId, String password) {
+        User user = this.findById(userId);
+        return passwordEncoder.matches(password, user.getPassword());
     }
 }

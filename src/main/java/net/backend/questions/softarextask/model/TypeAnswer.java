@@ -4,5 +4,10 @@ package net.backend.questions.softarextask.model;
 //combobox, date);
 
 public enum TypeAnswer {
-    SINGLE_LINE, MULTILINE,RADIO_BUTTON,CHECKBOX,COMBOBOX,DATE
+    SINGLE_LINE,
+    MULTILINE,
+    RADIO_BUTTON,
+    CHECKBOX,
+    COMBOBOX,
+    DATE
 }

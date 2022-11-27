@@ -1,22 +1,16 @@
 package net.backend.questions.softarextask.service;
 
+import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.model.Question;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-@Service
 public interface QuestionService {
-    Question create(Question question);
+    QuestionDto create(Integer userId,String email,Question question);
 
-    void update(Question question, Question questionFromDb);
+    QuestionDto update(Integer id,Question question);
 
-    boolean delete(Question question);
+    void delete(Integer questId);
 
-    Question findById(int id);
+    QuestionDto findById(Integer id);
 
-    List<Question> findAll();
-
-    List<Question> findAllByUserId(Integer user_id);
-
+    QuestionDto findByIdAndUserId(Integer id, Integer userId);
 }

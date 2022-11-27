@@ -1,10 +1,10 @@
-package net.backend.questions.softarextask.jwt;
+package net.backend.questions.softarextask.domain;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import net.backend.questions.softarextask.domain.utils.JwtAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -19,12 +19,11 @@ public class JwtTokenFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            final Claims claims = jwtTokenProvider.getClaims(token);
+        if (token != null && jwtTokenProvider.validateAccessToken(token)) {
+            final Claims claims = jwtTokenProvider.getAccessClaims(token);
             final JwtAuthentication auth = JwtTokenProvider.generate(claims);
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);

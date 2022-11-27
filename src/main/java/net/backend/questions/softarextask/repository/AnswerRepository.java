@@ -8,8 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface AnswerRepository extends JpaRepository<Answer,Integer> {
     @Query("select a from Answer a where a.user.id = ?1")
-    Optional<List<Answer>> findAllByUserId(Integer user_id);
+    Optional<List<Answer>> findAllByUserId(Integer userId);
+    Optional<Answer> findByQuestionId(Integer questionId);
+    Optional<Answer> findByIdAndUserId(Integer id, Integer userId);
 }

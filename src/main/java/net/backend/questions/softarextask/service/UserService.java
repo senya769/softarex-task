@@ -2,26 +2,23 @@ package net.backend.questions.softarextask.service;
 
 import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.model.User;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface UserService {
-    User create(User user);
+    UserDto create(User user);
 
-    void update(User user, User userFromBd);
+    UserDto update(Integer userId, User userFromBd);
 
-    void delete(User user);
+    void delete(Integer userId);
 
-    User findById(int id);
+    User findById(Integer id);
 
-    UserDto findByIdDto(int id);
+    UserDto findByIdDto(Integer id);
 
-    UserDto findByEmail(String email);
+    UserDto findByEmailDto(String email);
 
     List<UserDto> findAllDto();
 
-    List<User> findAll();
-
+    Boolean isPasswordMatch(Integer id, String password);
 }

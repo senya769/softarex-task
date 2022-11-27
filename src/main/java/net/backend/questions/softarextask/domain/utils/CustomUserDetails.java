@@ -1,26 +1,25 @@
-package net.backend.questions.softarextask.model.utils;
+package net.backend.questions.softarextask.domain.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.Getter;
 import net.backend.questions.softarextask.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
-public class UserDetailsImpl implements UserDetails {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+@Builder
+public class CustomUserDetails implements UserDetails {
     private final Integer id;
 
     private final String email;
+
     private final String firstName;
+
     private final String lastName;
 
     @JsonIgnore
@@ -28,8 +27,8 @@ public class UserDetailsImpl implements UserDetails {
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Integer id, String email, String firstName, String lastName, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(Integer id, String email, String firstName, String lastName, String password,
+                             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
@@ -38,15 +37,19 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(User user) {
+    public static CustomUserDetails build(User user) {
         List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.name())).toList();
-        return new UserDetailsImpl(
-                user.getId(),
-                user.getEmail(),
-                user.getFirstName(), user.getLastName(), user.getPassword(),
-                authorities);
+        return CustomUserDetails.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .password(user.getPassword())
+                .authorities(authorities)
+                .build();
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
@@ -80,14 +83,5 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(id, user.id);
     }
 }

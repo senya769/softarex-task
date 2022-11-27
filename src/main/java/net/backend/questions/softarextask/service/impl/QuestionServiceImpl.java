@@ -1,64 +1,113 @@
 package net.backend.questions.softarextask.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import net.backend.questions.softarextask.dto.QuestionDto;
+import net.backend.questions.softarextask.exception.QuestionException;
+import net.backend.questions.softarextask.exception.UserException;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
+import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.repository.QuestionRepository;
+import net.backend.questions.softarextask.repository.UserRepository;
 import net.backend.questions.softarextask.service.QuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
 
+    private final UserRepository userRepository;
 
-    @Autowired
-    public QuestionServiceImpl(QuestionRepository questionRepository) {
-        this.questionRepository = questionRepository;
+    private final ModelMapper modelMapper;
+
+    @Override
+    public QuestionDto create(Integer userId, String email, Question question) {
+        User userFrom = userRepository.findById(userId).orElseThrow(
+                () -> UserException.builder()
+                        .message("This question with id was not found!")
+                        .status(HttpStatus.NOT_FOUND)
+                        .detail("Id: ", userId.toString())
+                        .build()
+        );
+        User userFor = userRepository.findByEmail(email).orElseThrow(
+                () -> UserException.builder()
+                        .message("This email already exists")
+                        .status(HttpStatus.CONFLICT)
+                        .detail("Email: ", email)
+                        .build()
+        );
+        question.setUser(userFrom);
+        Answer answer = Answer.builder()
+                .user(userFor)
+                .build();
+        question.setAnswer(answer);
+        Question save = questionRepository.save(question);
+        return modelMapper.map(save, QuestionDto.class);
     }
 
     @Override
-    public Question create(Question question) {
-        return questionRepository.save(question);
-    }
-
-    @Override
-    public void update(Question question, Question questionFromDb) {
+    public QuestionDto update(Integer questionId, Question question) {
+        Question questionFromDb = questionRepository.findById(questionId)
+                .orElseThrow(
+                        () -> QuestionException.builder()
+                                .message("This question with id was not found!")
+                                .status(HttpStatus.NOT_FOUND)
+                                .detail("Id: ", questionId.toString())
+                                .build()
+                );
         Answer answer = questionFromDb.getAnswer();
-        answer.setAnswer("");
+        answer.setAnswer(null);
         questionFromDb.setAnswer(answer);
         questionFromDb.setQuestion(question.getQuestion());
         questionFromDb.setTypeAnswer(question.getTypeAnswer());
-        questionRepository.save(questionFromDb);
+        Question save = questionRepository.save(questionFromDb);
+        return modelMapper.map(save, QuestionDto.class);
     }
 
     @Override
-    public boolean delete(Question question) {
-        if (questionRepository.findById(question.getId()).isPresent()) {
-            questionRepository.delete(question);
-            return true;
-        }
-        return false;
+    public void delete(Integer questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(
+                        () -> QuestionException.builder()
+                                .message("This question with id was not found!")
+                                .status(HttpStatus.NOT_FOUND)
+                                .detail("Id: ", questionId.toString())
+                                .build()
+                );
+        questionRepository.delete(question);
     }
 
     @Override
-    public Question findById(int id) {
-        return questionRepository.findById(id).orElseThrow(() -> new NoSuchElementException("such Question ID{" + id + "} was not found"));
+    public QuestionDto findById(Integer questionId) {
+        return questionRepository.findById(questionId)
+                .map(question -> modelMapper.map(question, QuestionDto.class))
+                .orElseThrow(
+                        () -> QuestionException.builder()
+                                .message("This question with id was not found!")
+                                .status(HttpStatus.NOT_FOUND)
+                                .detail("Id: ", questionId.toString())
+                                .build()
+                );
     }
 
     @Override
-    public List<Question> findAll() {
-        return questionRepository.findAll();
-    }
-
-    @Override
-    public List<Question> findAllByUserId(Integer user_id) {
-        return questionRepository.findAllByUserId(user_id).orElseThrow(() -> new NoSuchElementException("List Questions from User with ID(" + user_id + ") was not found"));
+    public QuestionDto findByIdAndUserId(Integer questionId, Integer userId) {
+        return questionRepository.findByIdAndUserId(questionId, userId)
+                .map(question -> modelMapper.map(question, QuestionDto.class))
+                .orElseThrow(
+                        () -> QuestionException.builder()
+                                .message("This user or question with id was not found!")
+                                .status(HttpStatus.NOT_FOUND)
+                                .detail("Id Question: ", questionId.toString())
+                                .detail("Id User: ", userId.toString())
+                                .build()
+                );
     }
 }
 

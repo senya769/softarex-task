@@ -1,7 +1,7 @@
 package net.backend.questions.softarextask.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import net.backend.questions.softarextask.service.EmailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -11,14 +11,9 @@ import javax.transaction.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
-
     public final JavaMailSender mailSender;
-
-    @Autowired
-    public EmailServiceImpl(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
 
     @Value("${spring.mail.username}")
     private String username;
