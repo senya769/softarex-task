@@ -1,55 +1,58 @@
 package net.backend.questions.softarextask.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import net.backend.questions.softarextask.dto.AnswerDto;
+import net.backend.questions.softarextask.exception.AnswerException;
+import net.backend.questions.softarextask.exception.QuestionException;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.repository.AnswerRepository;
 import net.backend.questions.softarextask.service.AnswerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AnswerServiceImpl implements AnswerService {
     private final AnswerRepository answerRepository;
 
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public AnswerServiceImpl(AnswerRepository answerRepository) {
-        this.answerRepository = answerRepository;
-
+    @Override
+    public AnswerDto create(Answer answer) {
+        Answer save = answerRepository.save(answer);
+        return modelMapper.map(save, AnswerDto.class);
     }
 
     @Override
-    public boolean create(Answer answer) {
-        return answerRepository.save(answer).getId() != 0;
+    public AnswerDto update(Integer questId, Answer answer) {
+        Answer answerFromDb = answerRepository.findByQuestionId(questId)
+                .orElseThrow(
+                        () -> QuestionException.builder()
+                                .message("This question with id was not found!")
+                                .status(HttpStatus.NOT_FOUND)
+                                .detail("Id: ", questId.toString())
+                                .build()
+                );
+        answerFromDb.setAnswer(answer.getAnswer());
+        Answer saveAnswer = answerRepository.save(answerFromDb);
+        return modelMapper.map(saveAnswer, AnswerDto.class);
     }
 
     @Override
-    public boolean update(Answer answer) {
-        return answerRepository.save(answer).getId() != 0;
-    }
-
-    @Override
-    public boolean delete(Answer answer) {
-        answerRepository.delete(answer);
-        return true;
-    }
-
-    @Override
-    public Answer findById(int id) {
-        return answerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Such Answer with ID(" + id + ") not was found"));
-    }
-
-    @Override
-    public List<Answer> findAll() {
-        return answerRepository.findAll();
-    }
-
-    @Override
-    public List<Answer> findAllByUserId(Integer user_id) {
-        return answerRepository.findAllByUserId(user_id).orElseThrow(() -> new NoSuchElementException("list answers from user with id(" + user_id + ") was not found"));
+    public AnswerDto findByIdAndUserId(Integer answerId, Integer userId) {
+        return answerRepository.findByIdAndUserId(answerId, userId)
+                .map(answer -> modelMapper.map(answer, AnswerDto.class))
+                .orElseThrow(
+                        () -> AnswerException.builder()
+                                .message("This user or question with id was not found!")
+                                .status(HttpStatus.NOT_FOUND)
+                                .detail("Id Answer: ", answerId.toString())
+                                .detail("Id User: ", userId.toString())
+                                .build()
+                );
     }
 }

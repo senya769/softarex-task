@@ -2,16 +2,13 @@ package net.backend.questions.softarextask.dto;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import net.backend.questions.softarextask.model.Answer;
-import net.backend.questions.softarextask.model.Question;
+import lombok.*;
+import net.backend.questions.softarextask.model.Roles;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -24,8 +21,8 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String number;
-    private Set<Answer> answers;
-    private Set<Question> questions;
-
-
+    private Set<AnswerDto> answers;
+    private Set<QuestionDto> questions;
+    @Singular
+    private Set<Roles>roles;
 }

@@ -13,8 +13,8 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Entity
 @Builder
+@Entity
 @Table(name = "answers")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -28,7 +28,7 @@ public class Answer {
     @ToString.Exclude
     private User user;
 
-    @OneToOne(mappedBy = "answer")
+    @OneToOne(mappedBy = "answer",cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private Question question;
     private String answer;

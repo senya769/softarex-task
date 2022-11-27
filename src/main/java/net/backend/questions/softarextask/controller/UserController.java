@@ -1,32 +1,25 @@
 package net.backend.questions.softarextask.controller;
 
 
+import lombok.RequiredArgsConstructor;
 import net.backend.questions.softarextask.dto.UserDto;
+import net.backend.questions.softarextask.domain.utils.JwtAuthentication;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.User;
-import net.backend.questions.softarextask.service.EmailService;
 import net.backend.questions.softarextask.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
 
-@CrossOrigin(value = "*")
+@CrossOrigin("*")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final EmailService emailService;
-
-    @Autowired
-    public UserController(UserService userService, EmailService emailService) {
-        this.userService = userService;
-        this.emailService = emailService;
-    }
 
     @GetMapping()
     public List<UserDto> getList() {
@@ -34,40 +27,46 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<User> create(@RequestBody User user) {
-        userService.create(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public UserDto create(@RequestBody User user) {
+        return userService.create(user);
     }
 
-    @GetMapping("/{user_id}")
-    public UserDto findById(@PathVariable("user_id") Integer id) {
+    @GetMapping("/{userId}")
+    public UserDto findById(@PathVariable("userId") Integer id) {
         return userService.findByIdDto(id);
     }
 
-    @PatchMapping("/{user_id}")
-    public ResponseEntity<User> update(@PathVariable("user_id") Integer id, @RequestBody User user) {
-        User userFromDB = userService.findById(id);
-        userService.update(user, userFromDB);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PatchMapping("/{userId}")
+    public UserDto update(@PathVariable("userId") Integer id, @RequestBody User user) {
+        return userService.update(id,user);
     }
 
-    @DeleteMapping("/{user_id}")
-    public ResponseEntity<User> delete(@PathVariable Integer user_id) {
-        User user = userService.findById(user_id);
-        emailService.send(user.getEmail(),"Account Test-Web","Your account was deleted. Good luck!\n"+user);
-        userService.delete(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{userId}")
+    public void delete(@PathVariable Integer userId) {
+        User user = userService.findById(userId);
+        userService.delete(userId);
+    }
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/{userId}/check-password")
+    public void checkPassword(@PathVariable Integer userId, @RequestBody String password) {
+
     }
 
-    @GetMapping("/{user_id}/questions")
-    public Set<Question> getListQuestions(@PathVariable Integer user_id) {
-        User byId = userService.findById(user_id);
+    @GetMapping("/{userId}/questions")
+    public Set<Question> getListQuestions(@PathVariable Integer userId) {
+        User byId = userService.findById(userId);
         return byId.getQuestions();
     }
 
-    @GetMapping("/{user_id}/answers")
-    public Set<Answer> getListAnswers(@PathVariable Integer user_id) {
-        User byId = userService.findById(user_id);
+    @GetMapping("/{userId}/answers")
+    public Set<Answer> getListAnswers(@PathVariable Integer userId) {
+        User byId = userService.findById(userId);
         return byId.getAnswers();
+    }
+
+    @PostMapping("/check/password")
+    public Boolean checkPassword(@RequestBody String password, JwtAuthentication authentication){
+        return userService.isPasswordMatch(authentication.getId(), password);
     }
 }
