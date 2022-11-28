@@ -2,6 +2,7 @@ package net.backend.questions.softarextask.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import net.backend.questions.softarextask.domain.utils.CustomUserDetails;
 import net.backend.questions.softarextask.domain.utils.JwtAuthentication;
 import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.model.Answer;
@@ -10,9 +11,14 @@ import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @CrossOrigin("*")
@@ -22,6 +28,7 @@ import java.util.Set;
 public class UserController {
     private final UserService userService;
 
+    @SendTo("/topic/users")
     @GetMapping()
     public List<UserDto> getList() {
         return userService.findAllDto();
@@ -61,6 +68,7 @@ public class UserController {
         return byId.getQuestions();
     }
 
+    @SendTo("/topic/answers")
     @GetMapping("/{userId}/answers")
     public Set<Answer> getListAnswers(@PathVariable Integer userId) {
         User byId = userService.findById(userId);
@@ -68,7 +76,10 @@ public class UserController {
     }
 
     @PostMapping("/check/password")
-    public Boolean checkPassword(@RequestBody String password, JwtAuthentication authentication) {
-        return userService.isPasswordMatch(authentication.getId(), password);
+    public Map<String,Boolean> checkPassword(@RequestBody RequestPasswordConfirmDto password) {
+        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Boolean> isMatch = Map.of("isMatch", userService.isPasswordMatch(authentication.getId(), password.getPassword()));
+        return isMatch;
     }
+
 }
