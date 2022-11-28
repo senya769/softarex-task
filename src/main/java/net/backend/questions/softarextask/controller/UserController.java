@@ -49,12 +49,6 @@ public class UserController {
         userService.delete(userId);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/{userId}/check-password")
-    public void checkPassword(@PathVariable Integer userId, @RequestBody String password) {
-        userService.isPasswordMatch(userId,password);
-    }
-
     @SendTo("/topic/questions")
     @GetMapping("{userId}/questions")
     public Set<Question> getListQuestions(@PathVariable Integer userId) {
