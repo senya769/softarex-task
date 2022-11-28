@@ -71,7 +71,7 @@ public class JwtTokenProvider {
         jwtInfoToken.setRoles(claims.get("roles",List.class));
         jwtInfoToken.setFirstName(claims.get("firstName", String.class));
         jwtInfoToken.setId(claims.get("id", Integer.class));
-        jwtInfoToken.setEmail(claims.get("email", String.class));
+        jwtInfoToken.setEmail(claims.getSubject());
         return jwtInfoToken;
     }
 

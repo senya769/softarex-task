@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -57,7 +58,8 @@ public class UserServiceImpl implements UserService {
                         .build()
         );
         Boolean hasEmail = userRepository.existsUserByEmail(user.getEmail());
-        if (!hasEmail) {
+        boolean isNewEmail = Objects.equals(user.getEmail(), userFromDb.getEmail());
+        if (!hasEmail || isNewEmail) {
             userFromDb.setEmail(user.getEmail());
             userFromDb.setFirstName(user.getFirstName());
             userFromDb.setLastName(user.getLastName());
