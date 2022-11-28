@@ -49,7 +49,7 @@ public class CustomExceptionHandler {
                         .details(exception.getDetails()).build());
     }
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(QuestionException.class)
     public ResponseEntity<ErrorResponse> questionHandler(QuestionException exception) {
         return ResponseEntity
                 .status(exception.getStatus())
@@ -58,7 +58,7 @@ public class CustomExceptionHandler {
                         .details(exception.getDetails()).build());
     }
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(AnswerException.class)
     public ResponseEntity<ErrorResponse> answerHandler(AnswerException exception) {
         return ResponseEntity
                 .status(exception.getStatus())

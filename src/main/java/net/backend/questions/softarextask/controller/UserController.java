@@ -9,6 +9,8 @@ import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +40,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto update(@PathVariable("userId") Integer id, @RequestBody User user) {
-        return userService.update(id,user);
+        return userService.update(id, user);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -46,11 +48,6 @@ public class UserController {
     public void delete(@PathVariable Integer userId) {
         User user = userService.findById(userId);
         userService.delete(userId);
-    }
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/{userId}/check-password")
-    public void checkPassword(@PathVariable Integer userId, @RequestBody String password) {
-
     }
 
     @GetMapping("/{userId}/questions")
@@ -66,7 +63,8 @@ public class UserController {
     }
 
     @PostMapping("/check/password")
-    public Boolean checkPassword(@RequestBody String password, JwtAuthentication authentication){
+    public Boolean checkPassword(@RequestBody String password) {
+        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
         return userService.isPasswordMatch(authentication.getId(), password);
     }
 }
