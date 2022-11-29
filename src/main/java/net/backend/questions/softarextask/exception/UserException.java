@@ -9,13 +9,13 @@ import java.util.Map;
 
 @Getter
 @Builder
-public class UserException extends RuntimeException{
+public class UserException extends RuntimeException {
     private String message;
 
     private HttpStatus status;
 
     @Singular
-    private Map<String,String> details;
+    private Map<String, String> details;
 
     public UserException(String message, HttpStatus status, Map<String, String> details) {
         this.message = message;

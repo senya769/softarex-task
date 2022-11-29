@@ -2,16 +2,20 @@ package net.backend.questions.softarextask.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.backend.questions.softarextask.dto.AnswerDto;
+import net.backend.questions.softarextask.dto.AnswerUpdateDto;
 import net.backend.questions.softarextask.exception.AnswerException;
 import net.backend.questions.softarextask.exception.QuestionException;
+import net.backend.questions.softarextask.exception.UserException;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.repository.AnswerRepository;
 import net.backend.questions.softarextask.service.AnswerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,13 +26,7 @@ public class AnswerServiceImpl implements AnswerService {
     private final ModelMapper modelMapper;
 
     @Override
-    public AnswerDto create(Answer answer) {
-        Answer save = answerRepository.save(answer);
-        return modelMapper.map(save, AnswerDto.class);
-    }
-
-    @Override
-    public AnswerDto update(Integer questId, Answer answer) {
+    public AnswerDto update(Integer questId, AnswerUpdateDto answer) {
         Answer answerFromDb = answerRepository.findByQuestionId(questId)
                 .orElseThrow(
                         () -> QuestionException.builder()
@@ -54,5 +52,14 @@ public class AnswerServiceImpl implements AnswerService {
                                 .detail("Id User: ", userId.toString())
                                 .build()
                 );
+    }
+
+    @Override
+    public Set<AnswerDto> findAllByUserId(Integer userId) {
+        return answerRepository.findAllByUserId(userId)
+                .orElseThrow(() -> UserException.builder().build())
+                .stream()
+                .map(answer -> modelMapper.map(answer, AnswerDto.class))
+                .collect(Collectors.toSet());
     }
 }

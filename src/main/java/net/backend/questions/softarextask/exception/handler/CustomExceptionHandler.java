@@ -5,18 +5,28 @@ import net.backend.questions.softarextask.exception.*;
 import org.modelmapper.spi.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.NoSuchElementException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorMessage> noSuchElement(NoSuchElementException exception) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> noSuchElement(MethodArgumentNotValidException exception) {
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+        Map<String, String> map = new HashMap<>();
+        fieldErrors.forEach(fieldError -> map.put(fieldError.getField(), fieldError.getDefaultMessage()));
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorMessage(exception.getMessage()));
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder()
+                        .message("Value is not valid")
+                        .details(map)
+                        .build());
     }
 
     @ExceptionHandler(JwtAuthException.class)

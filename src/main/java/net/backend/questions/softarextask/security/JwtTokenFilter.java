@@ -1,8 +1,8 @@
-package net.backend.questions.softarextask.domain;
+package net.backend.questions.softarextask.security;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import net.backend.questions.softarextask.domain.utils.JwtAuthentication;
+import net.backend.questions.softarextask.security.utils.JwtAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -13,6 +13,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+
 @Component
 @RequiredArgsConstructor
 public class JwtTokenFilter extends GenericFilterBean {

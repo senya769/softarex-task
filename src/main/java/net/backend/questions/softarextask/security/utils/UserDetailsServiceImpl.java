@@ -1,4 +1,4 @@
-package net.backend.questions.softarextask.domain.utils;
+package net.backend.questions.softarextask.security.utils;
 
 import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.repository.UserRepository;

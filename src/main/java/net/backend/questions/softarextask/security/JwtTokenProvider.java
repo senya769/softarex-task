@@ -1,14 +1,17 @@
-package net.backend.questions.softarextask.domain;
+package net.backend.questions.softarextask.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.exception.JwtAuthException;
-import net.backend.questions.softarextask.domain.utils.JwtAuthentication;
 import net.backend.questions.softarextask.model.Roles;
+import net.backend.questions.softarextask.security.utils.JwtAuthentication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class JwtTokenProvider {
         byte[] keyBytes = Decoders.BASE64.decode(this.accessKeyValue);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
     private SecretKey getRefreshSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.refreshKeyValue);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -54,6 +59,7 @@ public class JwtTokenProvider {
                 .signWith(this.getAccessSigningKey())
                 .compact();
     }
+
     public String generateRefreshToken(UserDto user) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
@@ -68,7 +74,7 @@ public class JwtTokenProvider {
 
     public static JwtAuthentication generate(Claims claims) {
         final JwtAuthentication jwtInfoToken = new JwtAuthentication();
-        jwtInfoToken.setRoles(claims.get("roles",List.class));
+        jwtInfoToken.setRoles(claims.get("roles", List.class));
         jwtInfoToken.setFirstName(claims.get("firstName", String.class));
         jwtInfoToken.setId(claims.get("id", Integer.class));
         jwtInfoToken.setEmail(claims.getSubject());
@@ -128,6 +134,7 @@ public class JwtTokenProvider {
             throw new JwtAuthException("JWT token is expired or invalid");
         }
     }
+
     private List<String> getRoleNames(Set<Roles> userRoles) {
         return userRoles.stream()
                 .map(Roles::getAuthority)

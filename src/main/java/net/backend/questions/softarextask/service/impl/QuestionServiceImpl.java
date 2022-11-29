@@ -3,7 +3,6 @@ package net.backend.questions.softarextask.service.impl;
 import lombok.RequiredArgsConstructor;
 import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.exception.QuestionException;
-import net.backend.questions.softarextask.exception.UserException;
 import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.User;
@@ -13,8 +12,10 @@ import net.backend.questions.softarextask.service.QuestionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,40 +28,25 @@ public class QuestionServiceImpl implements QuestionService {
     private final ModelMapper modelMapper;
 
     @Override
-    public QuestionDto create(Integer userId, String email, Question question) {
+    public QuestionDto create(Integer userId, String email, QuestionDto question) {
         User userFrom = userRepository.findById(userId).orElseThrow(
-                () -> UserException.builder()
-                        .message("This question with id was not found!")
-                        .status(HttpStatus.NOT_FOUND)
-                        .detail("Id: ", userId.toString())
-                        .build()
-        );
+                () -> UserServiceImpl.userNotFoundById(userId));
         User userFor = userRepository.findByEmail(email).orElseThrow(
-                () -> UserException.builder()
-                        .message("This email already exists")
-                        .status(HttpStatus.CONFLICT)
-                        .detail("Email: ", email)
-                        .build()
-        );
-        question.setUser(userFrom);
+                () -> UserServiceImpl.emailExists(email));
+        Question readyToSave = modelMapper.map(question, Question.class);
+        readyToSave.setUser(userFrom);
         Answer answer = Answer.builder()
                 .user(userFor)
                 .build();
-        question.setAnswer(answer);
-        Question save = questionRepository.save(question);
-        return modelMapper.map(save, QuestionDto.class);
+        readyToSave.setAnswer(answer);
+        Question questionSave = questionRepository.save(readyToSave);
+        return modelMapper.map(questionSave, QuestionDto.class);
     }
 
     @Override
-    public QuestionDto update(Integer questionId, Question question) {
+    public QuestionDto update(Integer questionId, QuestionDto question) {
         Question questionFromDb = questionRepository.findById(questionId)
-                .orElseThrow(
-                        () -> QuestionException.builder()
-                                .message("This question with id was not found!")
-                                .status(HttpStatus.NOT_FOUND)
-                                .detail("Id: ", questionId.toString())
-                                .build()
-                );
+                .orElseThrow(() -> questionNotFoundById(questionId));
         Answer answer = questionFromDb.getAnswer();
         answer.setAnswer(null);
         questionFromDb.setAnswer(answer);
@@ -73,13 +59,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void delete(Integer questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(
-                        () -> QuestionException.builder()
-                                .message("This question with id was not found!")
-                                .status(HttpStatus.NOT_FOUND)
-                                .detail("Id: ", questionId.toString())
-                                .build()
-                );
+                .orElseThrow(() -> questionNotFoundById(questionId));
         questionRepository.delete(question);
     }
 
@@ -87,27 +67,31 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionDto findById(Integer questionId) {
         return questionRepository.findById(questionId)
                 .map(question -> modelMapper.map(question, QuestionDto.class))
-                .orElseThrow(
-                        () -> QuestionException.builder()
-                                .message("This question with id was not found!")
-                                .status(HttpStatus.NOT_FOUND)
-                                .detail("Id: ", questionId.toString())
-                                .build()
-                );
+                .orElseThrow(() -> questionNotFoundById(questionId));
     }
 
     @Override
     public QuestionDto findByIdAndUserId(Integer questionId, Integer userId) {
         return questionRepository.findByIdAndUserId(questionId, userId)
                 .map(question -> modelMapper.map(question, QuestionDto.class))
-                .orElseThrow(
-                        () -> QuestionException.builder()
-                                .message("This user or question with id was not found!")
-                                .status(HttpStatus.NOT_FOUND)
-                                .detail("Id Question: ", questionId.toString())
-                                .detail("Id User: ", userId.toString())
-                                .build()
-                );
+                .orElseThrow(() -> questionNotFoundById(questionId));
+    }
+
+    @Override
+    public Set<QuestionDto> findAllByUserId(Integer userId) {
+        return questionRepository.findAllByUserId(userId)
+                .orElseThrow(() -> UserServiceImpl.userNotFoundById(userId))
+                .stream()
+                .map(questions -> modelMapper.map(questions, QuestionDto.class))
+                .collect(Collectors.toSet());
+    }
+
+    private QuestionException questionNotFoundById(Integer id) {
+        return QuestionException.builder()
+                .message("This question with id was not found!")
+                .status(HttpStatus.NOT_FOUND)
+                .detail("Id: ", id.toString())
+                .build();
     }
 }
 

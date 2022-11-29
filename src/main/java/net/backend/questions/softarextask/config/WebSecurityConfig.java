@@ -1,7 +1,7 @@
 package net.backend.questions.softarextask.config;
 
 import lombok.RequiredArgsConstructor;
-import net.backend.questions.softarextask.domain.JwtTokenProvider;
+import net.backend.questions.softarextask.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

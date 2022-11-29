@@ -1,14 +1,17 @@
 package net.backend.questions.softarextask.service;
 
+import net.backend.questions.softarextask.dto.UserCreateDto;
 import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.model.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 public interface UserService {
-    UserDto create(User user);
+    UserDto create(UserCreateDto user);
 
-    UserDto update(Integer userId, User userFromBd);
+    UserDto update(Integer userId, UserCreateDto user);
 
     void delete(Integer userId);
 

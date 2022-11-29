@@ -1,4 +1,4 @@
-package net.backend.questions.softarextask.domain.utils;
+package net.backend.questions.softarextask.security.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package net.backend.questions.softarextask.config;
 
-import net.backend.questions.softarextask.domain.JwtTokenFilter;
-import net.backend.questions.softarextask.domain.JwtTokenProvider;
+import net.backend.questions.softarextask.security.JwtTokenFilter;
+import net.backend.questions.softarextask.security.JwtTokenProvider;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;

@@ -1,4 +1,4 @@
-package net.backend.questions.softarextask.domain.utils;
+package net.backend.questions.softarextask.security.utils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 public class JwtAuthentication implements Authentication {
-
     private boolean authenticated;
 
     private Integer id;

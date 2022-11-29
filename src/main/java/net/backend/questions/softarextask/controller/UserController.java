@@ -2,69 +2,51 @@ package net.backend.questions.softarextask.controller;
 
 
 import lombok.RequiredArgsConstructor;
-import net.backend.questions.softarextask.domain.utils.JwtAuthentication;
+import net.backend.questions.softarextask.controller.mapping.UserURL;
+import net.backend.questions.softarextask.dto.RequestConfirmPasswordDto;
+import net.backend.questions.softarextask.dto.ResponseMatchPasswordDto;
+import net.backend.questions.softarextask.dto.UserCreateDto;
 import net.backend.questions.softarextask.dto.UserDto;
-import net.backend.questions.softarextask.model.Answer;
-import net.backend.questions.softarextask.model.Question;
-import net.backend.questions.softarextask.model.User;
+import net.backend.questions.softarextask.security.utils.JwtAuthentication;
 import net.backend.questions.softarextask.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
-    @GetMapping()
+    @GetMapping(UserURL.GET_ALL)
     public List<UserDto> getList() {
         return userService.findAllDto();
     }
 
-    @PostMapping()
-    public UserDto create(@RequestBody User user) {
-        return userService.create(user);
-    }
-
-    @GetMapping("/{userId}")
+    @GetMapping(UserURL.GET_BY_ID)
     public UserDto findById(@PathVariable("userId") Integer id) {
         return userService.findByIdDto(id);
     }
 
-    @PatchMapping("/{userId}")
-    public UserDto update(@PathVariable("userId") Integer id, @RequestBody User user) {
-        return userService.update(id, user);
+    @PatchMapping(UserURL.PATCH_BY_ID)
+    public UserDto update(@PathVariable("userId") Integer id, @Valid @RequestBody UserCreateDto userCreateDto) {
+        return userService.update(id, userCreateDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/{userId}")
+    @DeleteMapping(UserURL.DELETE_BY_ID)
     public void delete(@PathVariable Integer userId) {
         userService.delete(userId);
     }
 
-    @SendTo("/topic/questions")
-    @GetMapping("{userId}/questions")
-    public Set<Question> getListQuestions(@PathVariable Integer userId) {
-        User byId = userService.findById(userId);
-        return byId.getQuestions();
-    }
-
-    @GetMapping("/{userId}/answers")
-    public Set<Answer> getListAnswers(@PathVariable Integer userId) {
-        User byId = userService.findById(userId);
-        return byId.getAnswers();
-    }
-
-    @PostMapping("/check/password")
-    public Boolean checkPassword(@RequestBody String password) {
+    @PostMapping(UserURL.POST_CHECK_PASSWORD)
+    public ResponseMatchPasswordDto checkPassword(@Valid @RequestBody RequestConfirmPasswordDto passwordDto) {
         JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return userService.isPasswordMatch(authentication.getId(), password);
+        Boolean passwordMatch = userService.isPasswordMatch(authentication.getId(), passwordDto.getPassword());
+        return new ResponseMatchPasswordDto(passwordMatch);
     }
 }
