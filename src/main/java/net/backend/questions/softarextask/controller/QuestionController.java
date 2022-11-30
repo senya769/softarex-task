@@ -9,6 +9,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @CrossOrigin(value = "*")
@@ -19,7 +21,7 @@ public class QuestionController {
 
     @PostMapping(QuestionURL.POST_CREATE)
     public QuestionDto create(@Valid @RequestBody QuestionDto question,
-                              @RequestParam String email,
+                              @RequestParam @NotBlank String email,
                               @PathVariable Integer userId) {
         return questionService.create(userId, email, question);
     }
