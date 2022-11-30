@@ -12,13 +12,11 @@ import net.backend.questions.softarextask.service.QuestionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
