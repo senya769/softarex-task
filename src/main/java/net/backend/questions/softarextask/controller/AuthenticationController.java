@@ -1,6 +1,7 @@
 package net.backend.questions.softarextask.controller;
 
 import lombok.RequiredArgsConstructor;
+import net.backend.questions.softarextask.controller.mapping.AuthenticationURL;
 import net.backend.questions.softarextask.dto.UserCreateDto;
 import net.backend.questions.softarextask.dto.UserDto;
 import net.backend.questions.softarextask.dto.jwt.JwtRefreshRequestDto;
@@ -21,22 +22,22 @@ import javax.validation.Valid;
 public class AuthenticationController {
     private final AuthService authService;
 
-    @PostMapping("/login")
+    @PostMapping(AuthenticationURL.LOGIN)
     public JwtResponseDto login(@Valid @RequestBody JwtRequestDto requestDto) {
         return authService.login(requestDto);
     }
 
-    @PostMapping("/registration")
+    @PostMapping(AuthenticationURL.REGISTRATION)
     public UserDto registration(@Valid @RequestBody UserCreateDto createDto) {
         return authService.registration(createDto);
     }
 
-    @PostMapping("/token")
+    @PostMapping(AuthenticationURL.ACCESS_TOKEN)
     public JwtResponseWithoutRefreshDto getNewAccessToken(@Valid @RequestBody JwtRefreshRequestDto request) {
         return authService.getAccessToken(request.getRefreshToken());
     }
 
-    @PostMapping("/refresh")
+    @PostMapping(AuthenticationURL.REFRESH_TOKEN)
     public JwtResponseDto getNewRefreshToken(@Valid @RequestBody JwtRefreshRequestDto request) {
         return authService.refresh(request.getRefreshToken());
     }

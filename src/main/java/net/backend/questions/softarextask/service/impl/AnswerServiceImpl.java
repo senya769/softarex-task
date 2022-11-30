@@ -29,8 +29,8 @@ public class AnswerServiceImpl implements AnswerService {
     public AnswerDto update(Integer questId, AnswerUpdateDto answer) {
         Answer answerFromDb = answerRepository.findByQuestionId(questId)
                 .orElseThrow(
-                        () -> QuestionException.builder()
-                                .message("This question with id was not found!")
+                        () -> AnswerException.builder()
+                                .message("This answer with question id was not found!")
                                 .status(HttpStatus.NOT_FOUND)
                                 .detail("Id: ", questId.toString())
                                 .build()

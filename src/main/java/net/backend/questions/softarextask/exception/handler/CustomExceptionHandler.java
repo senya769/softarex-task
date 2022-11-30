@@ -18,8 +18,8 @@ import java.util.Map;
 public class CustomExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> noSuchElement(MethodArgumentNotValidException exception) {
-        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
         Map<String, String> map = new HashMap<>();
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
         fieldErrors.forEach(fieldError -> map.put(fieldError.getField(), fieldError.getDefaultMessage()));
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
