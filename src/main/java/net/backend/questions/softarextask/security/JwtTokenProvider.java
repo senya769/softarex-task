@@ -52,7 +52,6 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
-                //.claim("email", user.getEmail())
                 .claim("roles", getRoleNames(user.getRoles()))
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -122,7 +121,6 @@ public class JwtTokenProvider {
         return validateToken(refreshToken, this.getRefreshSigningKey());
     }
 
-    // check on valid toke
     public boolean validateToken(String token, SecretKey secretKey) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder()

@@ -3,7 +3,6 @@ package net.backend.questions.softarextask.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -32,7 +31,7 @@ public class Question {
     @Enumerated(EnumType.STRING)
     private TypeAnswer typeAnswer;
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "answer_id")
     @ToString.Exclude
     private Answer answer;

@@ -17,7 +17,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000")
                 .allowedMethods("*");
     }
+
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
-    }}
+    }
+}

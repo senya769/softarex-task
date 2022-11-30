@@ -3,7 +3,6 @@ package net.backend.questions.softarextask.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -28,7 +27,7 @@ public class Answer {
     @ToString.Exclude
     private User user;
 
-    @OneToOne(mappedBy = "answer",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private Question question;
     private String answer;

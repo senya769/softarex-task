@@ -4,5 +4,5 @@ public interface AuthenticationURL {
     String LOGIN = "/login";
     String REGISTRATION = "/registration";
     String ACCESS_TOKEN = "/access";
-    String REFRESH_TOKEN ="/refresh";
+    String REFRESH_TOKEN = "/refresh";
 }
