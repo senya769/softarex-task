@@ -7,5 +7,4 @@ public interface UserURL {
     String PATCH_BY_ID = BASE + "/{userId}";
     String DELETE_BY_ID = BASE + "/{userId}";
     String POST_CHECK_PASSWORD = BASE + "/check-password";
-
 }
