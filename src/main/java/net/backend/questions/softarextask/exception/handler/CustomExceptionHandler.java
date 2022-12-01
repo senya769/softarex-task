@@ -35,6 +35,15 @@ public class CustomExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorMessage(exception.getMessage()));
     }
+  @ExceptionHandler(TypeAnswerException.class)
+    public ResponseEntity<ErrorResponse> noValidValue(TypeAnswerException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder()
+                        .message(exception.getMessage())
+                        .detail("Value:",exception.getDetail())
+                        .build());
+    }
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ErrorMessage> noSuchElement(SignatureException exception) {

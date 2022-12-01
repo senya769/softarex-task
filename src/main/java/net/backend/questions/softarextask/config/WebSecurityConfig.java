@@ -20,6 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Collections;
+
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -38,8 +40,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors().and()
                 .csrf().disable()
+                .cors()
+                .and()
                 .apply(new JwtConfig(jwtTokenProvider))
                 .and()
                 .authorizeRequests()
@@ -53,10 +56,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        corsConfiguration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
         source.registerCorsConfiguration("/**", corsConfiguration);
-
         return source;
     }
 

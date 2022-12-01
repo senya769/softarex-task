@@ -4,7 +4,7 @@ import net.backend.questions.softarextask.dto.AnswerDto;
 import net.backend.questions.softarextask.dto.AnswerUpdateDto;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.List;
 
 @Transactional
 public interface AnswerService {
@@ -12,5 +12,5 @@ public interface AnswerService {
 
     AnswerDto findByIdAndUserId(Integer id, Integer userId);
 
-    Set<AnswerDto> findAllByUserId(Integer userId);
+    List<AnswerDto> findAllByUserId(Integer userId);
 }

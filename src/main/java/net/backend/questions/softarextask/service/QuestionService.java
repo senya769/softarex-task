@@ -1,15 +1,16 @@
 package net.backend.questions.softarextask.service;
 
 import net.backend.questions.softarextask.dto.QuestionDto;
+import net.backend.questions.softarextask.dto.QuestionRequestDto;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.List;
 
 @Transactional
 public interface QuestionService {
-    QuestionDto create(Integer userId, String email, QuestionDto question);
+    QuestionDto create(Integer userId, String email, QuestionRequestDto question);
 
-    QuestionDto update(Integer id, QuestionDto question);
+    QuestionDto update(Integer id, QuestionRequestDto question);
 
     void delete(Integer questId);
 
@@ -17,5 +18,5 @@ public interface QuestionService {
 
     QuestionDto findByIdAndUserId(Integer id, Integer userId);
 
-    Set<QuestionDto> findAllByUserId(Integer userId);
+    List<QuestionDto> findAllByUserId(Integer userId);
 }

@@ -5,9 +5,11 @@ import net.backend.questions.softarextask.controller.mapping.AnswerURL;
 import net.backend.questions.softarextask.dto.AnswerDto;
 import net.backend.questions.softarextask.dto.AnswerUpdateDto;
 import net.backend.questions.softarextask.service.AnswerService;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @CrossOrigin(value = "*")
 @RestController
@@ -23,5 +25,11 @@ public class AnswerController {
     @PatchMapping(AnswerURL.PATCH_BY_QUESTION_ID)
     public AnswerDto toAnswer(@Valid @RequestBody AnswerUpdateDto answerUpdateDto, @PathVariable Integer questId) {
         return answerService.update(questId, answerUpdateDto);
+    }
+
+    @SendTo("/topic/questions")
+    @GetMapping(AnswerURL.GET_ALL_BY_USER)
+    public List<AnswerDto> getListQuestions(@PathVariable Integer userId) {
+        return answerService.findAllByUserId(userId);
     }
 }

@@ -12,8 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -52,11 +51,11 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public Set<AnswerDto> findAllByUserId(Integer userId) {
+    public List<AnswerDto> findAllByUserId(Integer userId) {
         return answerRepository.findAllByUserId(userId)
                 .orElseThrow(() -> UserException.builder().build())
                 .stream()
                 .map(answer -> modelMapper.map(answer, AnswerDto.class))
-                .collect(Collectors.toSet());
+                .toList();
     }
 }
