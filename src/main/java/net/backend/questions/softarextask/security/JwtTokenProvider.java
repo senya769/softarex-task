@@ -1,8 +1,8 @@
 package net.backend.questions.softarextask.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -128,7 +128,7 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtAuthException | IllegalArgumentException | ExpiredJwtException e) {
             throw new JwtAuthException("JWT token is expired or invalid");
         }
     }

@@ -1,5 +1,6 @@
 package net.backend.questions.softarextask.exception.handler;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import net.backend.questions.softarextask.exception.*;
 import org.modelmapper.spi.ErrorMessage;
@@ -35,6 +36,14 @@ public class CustomExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorMessage(exception.getMessage()));
     }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorMessage> tokenInvalid(ExpiredJwtException exception) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorMessage(exception.getMessage()));
+    }
+
   @ExceptionHandler(TypeAnswerException.class)
     public ResponseEntity<ErrorResponse> noValidValue(TypeAnswerException exception) {
         return ResponseEntity
