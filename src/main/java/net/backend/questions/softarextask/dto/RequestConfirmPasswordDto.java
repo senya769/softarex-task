@@ -8,6 +8,5 @@ import javax.validation.constraints.Size;
 @Data
 public class RequestConfirmPasswordDto {
     @NotEmpty(message = "must not be empty")
-    @Size(min = 5, max = 20)
     private String password;
 }
