@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> userNotFoundById(userId));
         userRepository.delete(user);
-//        emailService.send(user.getEmail(), "Account Test-Web", "Your account was deleted!\nGood luck!");
+        emailService.send(user.getEmail(), "Account Test-Web", "Your account was deleted!\nGood luck!");
     }
 
     @Override
