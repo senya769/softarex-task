@@ -1,6 +1,7 @@
 package net.backend.questions.softarextask.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.backend.questions.softarextask.dto.AnswerDto;
 import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.dto.QuestionRequestDto;
 import net.backend.questions.softarextask.exception.QuestionException;
@@ -8,11 +9,13 @@ import net.backend.questions.softarextask.model.Answer;
 import net.backend.questions.softarextask.model.Question;
 import net.backend.questions.softarextask.model.TypeAnswer;
 import net.backend.questions.softarextask.model.User;
+import net.backend.questions.softarextask.repository.AnswerRepository;
 import net.backend.questions.softarextask.repository.QuestionRepository;
 import net.backend.questions.softarextask.repository.UserRepository;
 import net.backend.questions.softarextask.service.QuestionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +26,10 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
 
     private final UserRepository userRepository;
+
+    private final AnswerRepository answerRepository;
+
+    private final SimpMessagingTemplate template;
 
     private final ModelMapper modelMapper;
 
@@ -37,9 +44,12 @@ public class QuestionServiceImpl implements QuestionService {
         readyToSave.setUser(userFrom);
         Answer answer = Answer.builder()
                 .user(userFor)
+                .question(readyToSave)
                 .build();
         readyToSave.setAnswer(answer);
         Question questionSave = questionRepository.save(readyToSave);
+        template.convertAndSend("/topic/questions", this.findAllByUserId(userId));
+        template.convertAndSend("/topic/answers", getAllAnswersByUserIdForTopic(userFor.getId()));
         return modelMapper.map(questionSave, QuestionDto.class);
     }
 
@@ -53,6 +63,10 @@ public class QuestionServiceImpl implements QuestionService {
         questionFromDb.setQuestion(question.getQuestion());
         questionFromDb.setTypeAnswer(TypeAnswer.fromString(question.getTypeAnswer()));
         Question save = questionRepository.save(questionFromDb);
+        User userFromQuestion = save.getUser();
+        User userFromAnswer = answer.getUser();
+        template.convertAndSend("/topic/questions", this.findAllByUserId(userFromQuestion.getId()));
+        template.convertAndSend("/topic/answers", getAllAnswersByUserIdForTopic(userFromAnswer.getId()));
         return modelMapper.map(save, QuestionDto.class);
     }
 
@@ -61,6 +75,10 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> questionNotFoundById(questionId));
         questionRepository.delete(question);
+        User userFromQuestion = question.getUser();
+        User userFromAnswer = question.getAnswer().getUser();
+        template.convertAndSend("/topic/questions", this.findAllByUserId(userFromQuestion.getId()));
+        template.convertAndSend("/topic/answers", getAllAnswersByUserIdForTopic(userFromAnswer.getId()));
     }
 
     @Override
@@ -92,6 +110,14 @@ public class QuestionServiceImpl implements QuestionService {
                 .status(HttpStatus.NOT_FOUND)
                 .detail("Id: ", id.toString())
                 .build();
+    }
+
+    private List<AnswerDto> getAllAnswersByUserIdForTopic(Integer userId) {
+        return answerRepository.findAllByUserId(userId)
+                .orElseThrow(() -> UserServiceImpl.userNotFoundById(userId))
+                .stream()
+                .map(ans -> modelMapper.map(ans, AnswerDto.class))
+                .toList();
     }
 }
 

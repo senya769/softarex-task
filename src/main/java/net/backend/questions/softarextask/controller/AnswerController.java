@@ -5,7 +5,6 @@ import net.backend.questions.softarextask.controller.mapping.AnswerURL;
 import net.backend.questions.softarextask.dto.AnswerDto;
 import net.backend.questions.softarextask.dto.AnswerUpdateDto;
 import net.backend.questions.softarextask.service.AnswerService;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,7 +26,6 @@ public class AnswerController {
         return answerService.update(questId, answerUpdateDto);
     }
 
-    @SendTo("/topic/questions")
     @GetMapping(AnswerURL.GET_ALL_BY_USER)
     public List<AnswerDto> getListQuestions(@PathVariable Integer userId) {
         return answerService.findAllByUserId(userId);

@@ -6,7 +6,6 @@ import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.dto.QuestionRequestDto;
 import net.backend.questions.softarextask.service.QuestionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -42,7 +41,6 @@ public class QuestionController {
         return questionService.update(questId, question);
     }
 
-    @SendTo("/topic/questions")
     @GetMapping(QuestionURL.GET_ALL_BY_USER)
     public List<QuestionDto> getListQuestions(@PathVariable Integer userId) {
         return questionService.findAllByUserId(userId);
