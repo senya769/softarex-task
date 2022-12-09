@@ -12,5 +12,4 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     Optional<Set<Question>> findAllByUserId(Integer userId);
 
     Optional<Question> findByIdAndUserId(Integer id, Integer userId);
-
 }
