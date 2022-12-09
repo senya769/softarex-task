@@ -59,7 +59,6 @@ public class UserServiceImpl implements UserService {
         userFromDb.setPassword(passwordEncoder.encode(user.getPassword()));
         User save = userRepository.save(userFromDb);
         return modelMapper.map(save, UserDto.class);
-
     }
 
     @Override
@@ -87,7 +86,7 @@ public class UserServiceImpl implements UserService {
     public UserDto findByEmailDto(String email) {
         return userRepository.findByEmail(email)
                 .map(user -> modelMapper.map(user, UserDto.class))
-                .orElseThrow(() -> emailExists(email));
+                .orElseThrow(() -> userNotFoundByEmail(email));
     }
 
     @Override
@@ -117,6 +116,14 @@ public class UserServiceImpl implements UserService {
                 .message("This user with id was not found!")
                 .status(HttpStatus.CONFLICT)
                 .detail("Id: ", id.toString())
+                .build();
+    }
+
+    public static UserException userNotFoundByEmail(String email) {
+        return UserException.builder()
+                .message("This user with email was not found!")
+                .status(HttpStatus.BAD_REQUEST)
+                .detail("Email: ", email)
                 .build();
     }
 }

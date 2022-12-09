@@ -38,7 +38,7 @@ public class QuestionServiceImpl implements QuestionService {
         User userFrom = userRepository.findById(userId).orElseThrow(
                 () -> UserServiceImpl.userNotFoundById(userId));
         User userFor = userRepository.findByEmail(email).orElseThrow(
-                () -> UserServiceImpl.emailExists(email));
+                () -> UserServiceImpl.userNotFoundByEmail(email));
         Question readyToSave = modelMapper.map(question, Question.class);
         readyToSave.setTypeAnswer(TypeAnswer.fromString(question.getTypeAnswer()));
         readyToSave.setUser(userFrom);

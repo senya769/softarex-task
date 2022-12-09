@@ -20,7 +20,7 @@ public class QuestionController {
 
     @PostMapping(QuestionURL.POST_CREATE)
     public QuestionDto create(@Valid @RequestBody QuestionRequestDto question,
-                              @RequestParam @NotBlank String email,
+                              @Valid @NotBlank @RequestParam String email,
                               @PathVariable Integer userId) {
         return questionService.create(userId, email, question);
     }

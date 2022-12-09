@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface AnswerRepository extends JpaRepository<Answer, Integer> {
-    @Query("select a from Answer a where a.user.id = ?1")
+    @Query("select a from Answer a where a.user.id = ?1 order by a.id")
     Optional<Set<Answer>> findAllByUserId(Integer userId);
 
     Optional<Answer> findByQuestionId(Integer questionId);
