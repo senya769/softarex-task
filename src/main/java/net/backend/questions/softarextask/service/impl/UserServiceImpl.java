@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -101,6 +102,26 @@ public class UserServiceImpl implements UserService {
     public Boolean isPasswordMatch(Integer userId, String password) {
         User user = this.findById(userId);
         return passwordEncoder.matches(password, user.getPassword());
+    }
+
+    @Override
+    public void resetPassword(String email) {
+        UserDto byEmailDto = findByEmailDto(email);
+        User user = modelMapper.map(byEmailDto, User.class);
+        String randomPassword = generateRandomPassword();
+        user.setPassword(passwordEncoder.encode(randomPassword));
+        userRepository.save(user);
+        emailService.send(email, "Test-Web Reset Password", "Your new password is - " + randomPassword);
+    }
+
+    private String generateRandomPassword() {
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            int randomIndex = new Random().nextInt(chars.length());
+            sb.append(chars.charAt(randomIndex));
+        }
+        return sb.toString();
     }
 
     public static UserException emailExists(String email) {

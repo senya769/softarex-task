@@ -6,6 +6,7 @@ import net.backend.questions.softarextask.dto.QuestionDto;
 import net.backend.questions.softarextask.dto.QuestionRequestDto;
 import net.backend.questions.softarextask.service.QuestionService;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,12 +16,13 @@ import java.util.List;
 @CrossOrigin(value = "*")
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class QuestionController {
     private final QuestionService questionService;
 
     @PostMapping(QuestionURL.POST_CREATE)
     public QuestionDto create(@Valid @RequestBody QuestionRequestDto question,
-                              @Valid @NotBlank @RequestParam String email,
+                              @NotBlank(message = "Email must not be empty") @RequestParam String email,
                               @PathVariable Integer userId) {
         return questionService.create(userId, email, question);
     }

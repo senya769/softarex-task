@@ -32,6 +32,9 @@ public class JwtTokenProvider {
     @Value("${jwt.token.key.refresh}")
     private String refreshKeyValue;
 
+    @Value("${jwt.token.expired}")
+    private long validityInMilliseconds;
+
     private SecretKey getAccessSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.accessKeyValue);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -42,13 +45,9 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    @Value("${jwt.token.expired}")
-    private long validityInMilliseconds;
-
-
-    public String generateAccessToken(UserDto user) {
+    public String generateAccessToken(UserDto user, int rememberNum) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + validityInMilliseconds * rememberNum);
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())

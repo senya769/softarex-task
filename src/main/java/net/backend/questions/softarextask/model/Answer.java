@@ -3,6 +3,7 @@ package net.backend.questions.softarextask.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -35,13 +36,13 @@ public class Answer {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Answer answer1 = (Answer) o;
-        return Objects.equals(user, answer1.user) && Objects.equals(question, answer1.question) && Objects.equals(answer, answer1.answer);
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Answer answer = (Answer) o;
+        return id != null && Objects.equals(id, answer.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, question, answer);
+        return getClass().hashCode();
     }
 }

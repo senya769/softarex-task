@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class CustomExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> noSuchElement(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ErrorResponse> notValidFields(MethodArgumentNotValidException exception) {
         Map<String, String> map = new HashMap<>();
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
         fieldErrors.forEach(fieldError -> map.put(fieldError.getField(), fieldError.getDefaultMessage()));
@@ -27,6 +28,16 @@ public class CustomExceptionHandler {
                 .body(ErrorResponse.builder()
                         .message("Value is not valid")
                         .details(map)
+                        .build());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> notValidFields(ConstraintViolationException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder()
+                        .message("Value is not valid")
+                        .detail("Value", exception.getLocalizedMessage())
                         .build());
     }
 
@@ -44,13 +55,13 @@ public class CustomExceptionHandler {
                 .body(new ErrorMessage(exception.getMessage()));
     }
 
-  @ExceptionHandler(TypeAnswerException.class)
+    @ExceptionHandler(TypeAnswerException.class)
     public ResponseEntity<ErrorResponse> noValidValue(TypeAnswerException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
                         .message(exception.getMessage())
-                        .detail("Value:",exception.getDetail())
+                        .detail("Value:", exception.getDetail())
                         .build());
     }
 

@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -48,5 +49,11 @@ public class UserController {
         JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
         Boolean passwordMatch = userService.isPasswordMatch(authentication.getId(), passwordDto.getPassword());
         return new ResponseMatchPasswordDto(passwordMatch);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(UserURL.POST_RESET_PASSWORD)
+    public void resetPassword(@RequestParam @Email String email) {
+        userService.resetPassword(email);
     }
 }

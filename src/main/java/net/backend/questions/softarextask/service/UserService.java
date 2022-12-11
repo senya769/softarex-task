@@ -24,4 +24,6 @@ public interface UserService {
     List<UserDto> findAllDto();
 
     Boolean isPasswordMatch(Integer id, String password);
+
+    void resetPassword(String email);
 }

@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Collections;
 import java.util.List;
 
 @EnableWebSecurity
@@ -47,10 +46,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .apply(new JwtConfig(jwtTokenProvider))
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login", "/registration", "/token","/ws/**").permitAll()
+                .antMatchers("/login", "/registration", "/token", "/ws/**", "/users/reset-password").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .rememberMe().rememberMeParameter("remember-me");
         return http.build();
     }
 
@@ -58,7 +59,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-        corsConfiguration.setAllowedMethods(List.of("PUT","POST","PATCH","DELETE","GET","HEADER","OPTION"));
+        corsConfiguration.setAllowedMethods(List.of("PUT", "POST", "PATCH", "DELETE", "GET", "HEADER", "OPTION"));
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));

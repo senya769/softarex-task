@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
-        String token = jwtTokenProvider.generateAccessToken(user);
+        String token = jwtTokenProvider.generateAccessToken(user, requestDto.getRememberMeNumber());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
         refreshStorage.put(user.getEmail(), refreshToken);
         return new JwtResponseDto(user.getId(), email, token, refreshToken);
@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
             final String saveRefreshToken = refreshStorage.get(email);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 final UserDto user = userService.findByEmailDto(email);
-                final String accessToken = jwtTokenProvider.generateAccessToken(user);
+                final String accessToken = jwtTokenProvider.generateAccessToken(user, 1);
                 return new JwtResponseWithoutRefreshDto(user.getId(), user.getEmail(), accessToken);
             }
         }
@@ -79,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
             final String saveRefreshToken = refreshStorage.get(email);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 final UserDto user = userService.findByEmailDto(email);
-                final String accessToken = jwtTokenProvider.generateAccessToken(user);
+                final String accessToken = jwtTokenProvider.generateAccessToken(user, 1);
                 final String newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
                 refreshStorage.put(user.getEmail(), newRefreshToken);
                 return new JwtResponseDto(user.getId(), user.getEmail(), accessToken, newRefreshToken);
