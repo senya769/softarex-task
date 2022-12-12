@@ -27,7 +27,9 @@ public class AnswerController {
     }
 
     @GetMapping(AnswerURL.GET_ALL_BY_USER)
-    public List<AnswerDto> getListQuestions(@PathVariable Integer userId) {
-        return answerService.findAllByUserId(userId);
+    public List<AnswerDto> getListQuestions(@PathVariable Integer userId,
+                                            @RequestParam(defaultValue = "1") Integer page,
+                                            @RequestParam(defaultValue = "3") Integer size) {
+        return answerService.findAllByUserId(userId, page, size);
     }
 }

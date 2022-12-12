@@ -5,11 +5,12 @@ import net.backend.questions.softarextask.dto.AnswerDto;
 import net.backend.questions.softarextask.dto.AnswerUpdateDto;
 import net.backend.questions.softarextask.exception.AnswerException;
 import net.backend.questions.softarextask.model.Answer;
-import net.backend.questions.softarextask.model.User;
 import net.backend.questions.softarextask.repository.AnswerRepository;
 import net.backend.questions.softarextask.service.AnswerService;
 import net.backend.questions.softarextask.service.QuestionService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -27,18 +28,22 @@ public class AnswerServiceImpl implements AnswerService {
 
     private final ModelMapper modelMapper;
 
+    public static int page = 1;
+
+    public static int size = 3;
+
     @Override
     public AnswerDto update(Integer questId, AnswerUpdateDto answer) {
         Answer answerFromDb = answerRepository.findByQuestionId(questId)
                 .orElseThrow(() -> notFoundAnswerByQuestionId(questId));
         answerFromDb.setAnswer(answer.getAnswer());
         Answer saveAnswer = answerRepository.save(answerFromDb);
-        User userAnswer = saveAnswer.getUser();
-        User userQuestion = saveAnswer.getQuestion().getUser();
-        template.convertAndSend("/topic/questions",
-                questionService.findAllByUserId(userQuestion.getId()));
-        template.convertAndSend("/topic/answers",
-                this.findAllByUserId(userAnswer.getId()));
+        int userIdFromAnswer = saveAnswer.getUser().getId();
+        int userIdFromQuestion = saveAnswer.getQuestion().getUser().getId();
+        template.convertAndSend("/topic/questions/" + userIdFromAnswer,
+                questionService.findAllByUserId(userIdFromAnswer, QuestionServiceImpl.page, QuestionServiceImpl.size));
+        template.convertAndSend("/topic/answers/" + userIdFromQuestion,
+                this.findAllByUserId(userIdFromQuestion, page, size));
         return modelMapper.map(saveAnswer, AnswerDto.class);
     }
 
@@ -50,9 +55,10 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public List<AnswerDto> findAllByUserId(Integer userId) {
-        return answerRepository.findAllByUserId(userId)
-                .orElseThrow(() -> UserServiceImpl.userNotFoundById(userId))
+    public List<AnswerDto> findAllByUserId(Integer userId, Integer page, Integer size) {
+        AnswerServiceImpl.page = page;
+        AnswerServiceImpl.size = size;
+        return answerRepository.findAllByUserId(userId, PageRequest.of(page - 1, size, Sort.by("id")))
                 .stream()
                 .map(answer -> modelMapper.map(answer, AnswerDto.class))
                 .toList();

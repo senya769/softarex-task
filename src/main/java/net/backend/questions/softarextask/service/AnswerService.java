@@ -12,5 +12,5 @@ public interface AnswerService {
 
     AnswerDto findByIdAndUserId(Integer id, Integer userId);
 
-    List<AnswerDto> findAllByUserId(Integer userId);
+    List<AnswerDto> findAllByUserId(Integer userId, Integer page, Integer size);
 }

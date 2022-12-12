@@ -44,7 +44,9 @@ public class QuestionController {
     }
 
     @GetMapping(QuestionURL.GET_ALL_BY_USER)
-    public List<QuestionDto> getListQuestions(@PathVariable Integer userId) {
-        return questionService.findAllByUserId(userId);
+    public List<QuestionDto> getListQuestions(@PathVariable Integer userId,
+                                              @RequestParam(defaultValue = "1") Integer page,
+                                              @RequestParam(defaultValue = "3") Integer size) {
+        return questionService.findAllByUserId(userId, page, size);
     }
 }

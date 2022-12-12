@@ -18,5 +18,5 @@ public interface QuestionService {
 
     QuestionDto findByIdAndUserId(Integer id, Integer userId);
 
-    List<QuestionDto> findAllByUserId(Integer userId);
+    List<QuestionDto> findAllByUserId(Integer userId, Integer page, Integer size);
 }

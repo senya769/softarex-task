@@ -14,6 +14,8 @@ import net.backend.questions.softarextask.repository.QuestionRepository;
 import net.backend.questions.softarextask.repository.UserRepository;
 import net.backend.questions.softarextask.service.QuestionService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final ModelMapper modelMapper;
 
+    public static int page = 1;
+
+    public static int size = 3;
+
     @Override
     public QuestionDto create(Integer userId, String email, QuestionRequestDto question) {
         User userFrom = userRepository.findById(userId).orElseThrow(
@@ -48,8 +54,10 @@ public class QuestionServiceImpl implements QuestionService {
                 .build();
         readyToSave.setAnswer(answer);
         Question questionSave = questionRepository.save(readyToSave);
-        template.convertAndSend("/topic/questions", this.findAllByUserId(userId));
-        template.convertAndSend("/topic/answers", getAllAnswersByUserIdForTopic(userFor.getId()));
+        template.convertAndSend("/topic/questions/" + userId,
+                this.findAllByUserId(userId, page, size));
+        template.convertAndSend("/topic/answers/" + userFor.getId(),
+                getAllAnswersByUserIdForTopic(userFor.getId()));
         return modelMapper.map(questionSave, QuestionDto.class);
     }
 
@@ -63,10 +71,12 @@ public class QuestionServiceImpl implements QuestionService {
         questionFromDb.setQuestion(question.getQuestion());
         questionFromDb.setTypeAnswer(TypeAnswer.fromString(question.getTypeAnswer()));
         Question save = questionRepository.save(questionFromDb);
-        User userFromQuestion = save.getUser();
-        User userFromAnswer = answer.getUser();
-        template.convertAndSend("/topic/questions", this.findAllByUserId(userFromQuestion.getId()));
-        template.convertAndSend("/topic/answers", getAllAnswersByUserIdForTopic(userFromAnswer.getId()));
+        int userIdFromQuestion = save.getUser().getId();
+        int userIdFromAnswer = answer.getUser().getId();
+        template.convertAndSend("/topic/questions/" + userIdFromQuestion,
+                this.findAllByUserId(userIdFromQuestion, page, size));
+        template.convertAndSend("/topic/answers/" + userIdFromAnswer,
+                getAllAnswersByUserIdForTopic(userIdFromAnswer));
         return modelMapper.map(save, QuestionDto.class);
     }
 
@@ -75,10 +85,12 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> questionNotFoundById(questionId));
         questionRepository.delete(question);
-        User userFromQuestion = question.getUser();
-        User userFromAnswer = question.getAnswer().getUser();
-        template.convertAndSend("/topic/questions", this.findAllByUserId(userFromQuestion.getId()));
-        template.convertAndSend("/topic/answers", getAllAnswersByUserIdForTopic(userFromAnswer.getId()));
+        int userIdFromQuestion = question.getUser().getId();
+        int userIdFromAnswer = question.getAnswer().getUser().getId();
+        template.convertAndSend("/topic/questions/" + userIdFromQuestion,
+                this.findAllByUserId(userIdFromQuestion, page, size));
+        template.convertAndSend("/topic/answers/" + userIdFromAnswer,
+                getAllAnswersByUserIdForTopic(userIdFromAnswer));
     }
 
     @Override
@@ -96,9 +108,10 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionDto> findAllByUserId(Integer userId) {
-        return questionRepository.findAllByUserId(userId)
-                .orElseThrow(() -> UserServiceImpl.userNotFoundById(userId))
+    public List<QuestionDto> findAllByUserId(Integer userId, Integer page, Integer size) {
+        QuestionServiceImpl.page = page;
+        QuestionServiceImpl.size = size;
+        return questionRepository.findAllByUserId(userId, PageRequest.of(page - 1, size, Sort.by("id")))
                 .stream()
                 .map(questions -> modelMapper.map(questions, QuestionDto.class))
                 .toList();
@@ -113,8 +126,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private List<AnswerDto> getAllAnswersByUserIdForTopic(Integer userId) {
-        return answerRepository.findAllByUserId(userId)
-                .orElseThrow(() -> UserServiceImpl.userNotFoundById(userId))
+        return answerRepository.findAllByUserId(userId,
+                        PageRequest.of(AnswerServiceImpl.page - 1, AnswerServiceImpl.size, Sort.by("id")))
                 .stream()
                 .map(ans -> modelMapper.map(ans, AnswerDto.class))
                 .toList();
