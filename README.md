@@ -1,4 +1,6 @@
 # softarex-task
+# The main logic of the application - one user can ask a question to another user, and answer the 
+# questions asked to him.
 Test Project for JAVA Developers
 Requirement tech stack
 1. Java 8+
